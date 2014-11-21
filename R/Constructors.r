@@ -26,5 +26,13 @@ cruise <- function(code,name=NA_character_,desc=NA_character_,
   #cat("~~~ cruise:constructor ~~~\n");
   new(Class="Cruise",code=code,name=name,desc=desc,vessel=vessel,
       start_date=start_date,end_date=end_date,target_common=target_common,
-      target_scientific=target_scientific);
+      target_scientific=target_scientific)
+}
+
+ctdstation <- function(lat,lon,code,cruise_code,
+                       time=as.POSIXlt(strptime("0000-00-00 00:00:00","%Y-%m-%d %H:%M:%S")),
+                       depth=0,depth_unit="m"){
+  #cat("~~~ CTDStation:constructor ~~~\n");
+  new(Class="CTDStation",lat=lat,lon=lon,code=code,cruise_code=cruise_code,
+      time=time,depth=depth,depth_unit=depth_unit)
 }

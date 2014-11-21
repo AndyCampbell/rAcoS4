@@ -44,6 +44,7 @@ setGeneric(name="setTime",def=function(object,value){standardGeneric("setTime")}
 #getCode
 #generic for retrieving the code of a cruise/stratum/transect
 setGeneric(name="getCode",def=function(object){standardGeneric("getCode")})
+setGeneric(name="getCruiseCode",def=function(object){standardGeneric("getCruiseCode")})
 
 #getName
 #generic for retrieving the code of a cruise/stratum/transect
