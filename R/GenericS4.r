@@ -40,3 +40,42 @@ setGeneric(name="setSpeedUnit",def=function(object,value){standardGeneric("setSp
 #generics for retrieving/setting the time
 setGeneric(name="getTime",def=function(object){standardGeneric("getTime")})
 setGeneric(name="setTime",def=function(object,value){standardGeneric("setTime")})
+
+#getCode
+#generic for retrieving the code of a cruise/stratum/transect
+setGeneric(name="getCode",def=function(object){standardGeneric("getCode")})
+
+#getName
+#generic for retrieving the code of a cruise/stratum/transect
+setGeneric(name="getName",def=function(object,length){standardGeneric("getName")})
+
+#getDesc
+#generic for retrieving the description of an object
+setGeneric(name="getDesc",def=function(object){standardGeneric("getDesc")})
+
+#getVessel
+#generic to return vessel details
+setGeneric(name="getVessel",def=function(object){standardGeneric("getVessel")})
+
+#getStartDate, setStartDate, getEndDate, setEndDate
+#generic to get/set start and end dates
+setGeneric(name="getStartDate",def=function(object){standardGeneric("getStartDate")})
+setGeneric(name="setStartDate",def=function(object,value){standardGeneric("setStartDate")})
+setGeneric(name="getEndDate",def=function(object){standardGeneric("getEndDate")})
+setGeneric(name="setEndDate",def=function(object,value){standardGeneric("setEndDate")})
+
+#getTargetCommon
+#get common name for target species
+setGeneric(name="getTargetCommon",def=function(object){standardGeneric("getTargetCommon")})
+
+#get Geographical Limit generic functions
+setGeneric(name="getNorthernLimit",def=function(object){standardGeneric("getNorthernLimit")})
+setGeneric(name="getSouthernLimit",def=function(object){standardGeneric("getSouthernLimit")})
+setGeneric(name="getEasternLimit",def=function(object){standardGeneric("getEasternLimit")})
+setGeneric(name="getWesternLimit",def=function(object){standardGeneric("getWesternLimit")})
+
+
+
+
+
+
