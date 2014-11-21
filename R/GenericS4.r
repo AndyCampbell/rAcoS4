@@ -75,8 +75,8 @@ setGeneric(name="getSouthernLimit",def=function(object){standardGeneric("getSout
 setGeneric(name="getEasternLimit",def=function(object){standardGeneric("getEasternLimit")})
 setGeneric(name="getWesternLimit",def=function(object){standardGeneric("getWesternLimit")})
 
-
-
-
-
-
+#generic to get biological data for hauls
+setGeneric(name="getLFRange",def=function(object,species){standardGeneric("getLFRange")})
+setGeneric(name="getLW",def=function(object,species){standardGeneric("getLW")})
+setGeneric(name="getLA",def=function(object,species){standardGeneric("getLA")})
+setGeneric(name="getLM",def=function(object,species){standardGeneric("getLM")})

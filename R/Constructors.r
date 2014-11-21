@@ -36,3 +36,9 @@ ctdstation <- function(lat,lon,code,cruise_code,
   new(Class="CTDStation",lat=lat,lon=lon,code=code,cruise_code=cruise_code,
       time=time,depth=depth,depth_unit=depth_unit)
 }
+
+haul <- function(code,cruise_code,valid=TRUE,shoot_wp=NULL,haul_wp=NULL,species=NULL){
+  #cat("~~~ Haul:constructor ~~~\n");
+  new(Class="Haul",code=code,cruise_code=cruise_code,valid=valid,
+      shoot_wp=shoot_wp,haul_wp=haul_wp,species=species)
+}
