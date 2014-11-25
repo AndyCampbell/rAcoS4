@@ -88,9 +88,10 @@ setGeneric(name="getSouthernLimit",def=function(object){standardGeneric("getSout
 setGeneric(name="getEasternLimit",def=function(object){standardGeneric("getEasternLimit")})
 setGeneric(name="getWesternLimit",def=function(object){standardGeneric("getWesternLimit")})
 
-#generic to get biological data for hauls
+#generic to get/set biological data for hauls, targetSpecies
 setGeneric(name="getLFRange",def=function(object,species){standardGeneric("getLFRange")})
 setGeneric(name="getLW",def=function(object,species){standardGeneric("getLW")})
+setGeneric(name="setLW",def=function(object,value){standardGeneric("setLW")})
 setGeneric(name="getLA",def=function(object,species){standardGeneric("getLA")})
 setGeneric(name="getLM",def=function(object,species){standardGeneric("getLM")})
 
@@ -145,6 +146,11 @@ setGeneric(name="getNASCName",def=function(object){standardGeneric("getNASCName"
 
 #getIncludeInEstimates
 setGeneric(name="getIncludeInEstimates",def=function(object){standardGeneric("getIncludeInEstimates")})
+
+#target species options (could use same generics as mark types?)
+setGeneric(name="getEstAbd",def=function(object){standardGeneric("getEstAbd")})
+setGeneric(name="getEstByAge",def=function(object){standardGeneric("getEstByAge")})
+setGeneric(name="getEstByMat",def=function(object){standardGeneric("getEstByMat")})
 
 #assignHaul
 setGeneric(name="assignHaul",def=function(object,pos){standardGeneric("assignHaul")})

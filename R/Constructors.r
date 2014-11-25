@@ -64,3 +64,13 @@ marktype <- function(name,cruise_code,NASC_name,species,include,haul_assignment,
       species = species,include = include,haul_assignment = haul_assignment,
       mixed_with = mixed_with,hauls = hauls)
 }
+
+targetspecies <- function(species,common_name,LF_bin_size,ts_a,ts_b,ts_LFint,imm_codes=NA_real_,
+                          mat_codes=NA_real_,spt_codes=NA_real_,est_abd=FALSE,est_by_age=FALSE,
+                          est_by_mat=FALSE){
+  #cat("~~~ TargetSpecies:constructor ~~~\n");
+  new(Class = "TargetSpecies",species = species,common_name = common_name,
+             LF_bin_size = LF_bin_size,ts_a = ts_a,ts_b = ts_b,ts_LFint = ts_LFint,
+             imm_codes = imm_codes,mat_codes = mat_codes,spt_codes = spt_codes,
+             est_abd = est_abd,est_by_age = est_by_age,est_by_mat = est_by_mat)
+}
