@@ -70,10 +70,17 @@ setGeneric(name="setEndDate",def=function(object,value){standardGeneric("setEndD
 setGeneric(name="getStartPos",def=function(object){standardGeneric("getStartPos")})
 setGeneric(name="getEndPos",def=function(object){standardGeneric("getEndPos")})
 
-
 #getTargetCommon
 #get common name for target species
 setGeneric(name="getTargetCommon",def=function(object){standardGeneric("getTargetCommon")})
+
+#getSpecies
+setGeneric(name="getSpecies",def=function(object){standardGeneric("getSpecies")})
+
+#Maturity Codes
+setGeneric(name="getMatureCodes",def=function(object){standardGeneric("getMatureCodes")})
+setGeneric(name="getSpentCodes",def=function(object){standardGeneric("getSpentCodes")})
+setGeneric(name="getImmatureCodes",def=function(object){standardGeneric("getImmatureCodes")})
 
 #get Geographical Limit generic functions
 setGeneric(name="getNorthernLimit",def=function(object){standardGeneric("getNorthernLimit")})
@@ -129,3 +136,20 @@ setGeneric(name="setNumMarks",def=function(object,name,value){standardGeneric("s
 
 #getCellLengths
 setGeneric(name="getCellLengths",def=function(object,name){standardGeneric("getCellLengths")})
+
+#getMixedSpecies
+setGeneric(name="getMixedSpecies",def=function(object){standardGeneric("getMixedSpecies")})
+
+#getNASCName
+setGeneric(name="getNASCName",def=function(object){standardGeneric("getNASCName")})
+
+#getIncludeInEstimates
+setGeneric(name="getIncludeInEstimates",def=function(object){standardGeneric("getIncludeInEstimates")})
+
+#assignHaul
+setGeneric(name="assignHaul",def=function(object,pos){standardGeneric("assignHaul")})
+
+#abundance
+#calculate abundance
+#versions implemented for Mark,Transect,Stratum,MarkType
+setGeneric(name="abundance",def=function(object,target){standardGeneric("abundance")})

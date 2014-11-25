@@ -56,3 +56,11 @@ stratum <- function(code,cruise_code,type,boundary_lat,boundary_lon,ICESarea){
       boundary_lat = boundary_lat,boundary_lon = boundary_lon,
       ICESarea = ICESarea)
 }
+
+marktype <- function(name,cruise_code,NASC_name,species,include,haul_assignment,
+                     mixed_with=NA_character_,hauls){
+  #cat("~~~ MarkType:constructor ~~~\n");
+  new(Class = "MarkType",name = name,cruise_code = cruise_code,NASC_name = NASC_name,
+      species = species,include = include,haul_assignment = haul_assignment,
+      mixed_with = mixed_with,hauls = hauls)
+}
