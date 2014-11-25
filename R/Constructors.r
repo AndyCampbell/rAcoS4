@@ -42,3 +42,10 @@ haul <- function(code,cruise_code,valid=TRUE,shoot_wp=NULL,haul_wp=NULL,species=
   new(Class="Haul",code=code,cruise_code=cruise_code,valid=valid,
       shoot_wp=shoot_wp,haul_wp=haul_wp,species=species)
 }
+
+stratum <- function(code,cruise_code,type,boundary_lat,boundary_lon,ICESarea){
+  #cat("~~~ Stratum:constructor ~~~\n");
+  new(Class="Stratum",code = code,cruise_code = cruise_code,type = type,
+      boundary_lat = boundary_lat,boundary_lon = boundary_lon,
+      ICESarea = ICESarea)
+}

@@ -80,3 +80,36 @@ setGeneric(name="getLFRange",def=function(object,species){standardGeneric("getLF
 setGeneric(name="getLW",def=function(object,species){standardGeneric("getLW")})
 setGeneric(name="getLA",def=function(object,species){standardGeneric("getLA")})
 setGeneric(name="getLM",def=function(object,species){standardGeneric("getLM")})
+
+#getTrackLength_nm
+#versions implemented for mark, transect, stratum, cruise
+setGeneric(name="getTrackLength_nm",def=function(object){standardGeneric("getTrackLength_nm")})
+
+#getArea
+#versions implemented for Stratum
+setGeneric(name="getArea",def=function(object){standardGeneric("getArea")})
+
+#getICESarea
+#versions implemented for Stratum
+setGeneric(name="getICESarea",def=function(object){standardGeneric("getICESarea")})
+
+#abundance
+setGeneric(name="getMeanAbundance",def=function(object,marktype=NULL){standardGeneric("getMeanAbundance")})
+setGeneric(name="getAbdAtLen",def=function(object,marktypes){standardGeneric("getAbdAtLen")})
+setGeneric(name="setAbdAtLen",def=function(object,name,value){standardGeneric("setAbdAtLen")})
+setGeneric(name="getAbdAtAge",  def=function(object,marktypes){standardGeneric("getAbdAtAge")})
+setGeneric(name="setAbdAtAge",def=function(object,name,value){standardGeneric("setAbdAtAge")})
+setGeneric(name="getAbdAtMat",def=function(object,marktypes,matgroups){standardGeneric("getAbdAtMat")})
+setGeneric(name="setAbdAtMat",def=function(object,name,value){standardGeneric("setAbdAtMat")})
+
+#biomass
+setGeneric(name="getMeanBiomass",def=function(object,marktype=NULL){standardGeneric("getMeanBiomass")})
+setGeneric(name="getBioAtLen",def=function(object,marktypes){standardGeneric("getBioAtLen")})
+setGeneric(name="setBioAtLen",def=function(object,name,value){standardGeneric("setBioAtLen")})
+setGeneric(name="getBioAtAge",def=function(object,marktypes){standardGeneric("getBioAtAge")})
+setGeneric(name="setBioAtAge",def=function(object,name,value){standardGeneric("setBioAtAge")})
+setGeneric(name="getBioAtMat",def=function(object,marktypes,matgroups){standardGeneric("getBioAtMat")})
+setGeneric(name="setBioAtMat",def=function(object,name,value){standardGeneric("setBioAtMat")})
+
+#age range
+setGeneric(name="getAgeRange",def=function(object,name){standardGeneric("getAgeRange")})
