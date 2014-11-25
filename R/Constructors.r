@@ -43,6 +43,13 @@ haul <- function(code,cruise_code,valid=TRUE,shoot_wp=NULL,haul_wp=NULL,species=
       shoot_wp=shoot_wp,haul_wp=haul_wp,species=species)
 }
 
+transect <- function(code,stratum_code,cruise_code,start_pos,end_pos,
+                     start_time,end_time){
+  #cat("~~~ Transect:constructor ~~~\n");
+  new(Class="Transect",code = code,stratum_code = stratum_code,cruise_code = cruise_code,
+      start_pos = start_pos,end_pos = end_pos,start_time = start_time,end_time = end_time)
+}
+
 stratum <- function(code,cruise_code,type,boundary_lat,boundary_lon,ICESarea){
   #cat("~~~ Stratum:constructor ~~~\n");
   new(Class="Stratum",code = code,cruise_code = cruise_code,type = type,
