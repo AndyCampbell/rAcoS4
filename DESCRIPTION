@@ -6,4 +6,4 @@ Description: What the package does (one paragraph)
 Depends: R (>= 3.1.2)
 License: What license is it under?
 LazyData: true
-Collate: 'GenericS4.r' 'GeoPointS4.r' 'WayPointS4.r' 'CruiseS4.r' 'CTDStationS4.r' 'HaulS4.r' 'TransectS4.r' 'StratumS4.r' 'MarkTypeS4.r' 'TargetSpeciesS4.r' 'Constructors.r'
+Collate: 'GenericS4.r' 'GeoPointS4.r' 'WayPointS4.r' 'CruiseS4.r' 'CTDStationS4.r' 'HaulS4.r' 'TransectS4.r' 'StratumS4.r' 'MarkTypeS4.r' 'TargetSpeciesS4.r' 'MarkS4.r' 'Constructors.r'

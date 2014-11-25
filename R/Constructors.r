@@ -74,3 +74,14 @@ targetspecies <- function(species,common_name,LF_bin_size,ts_a,ts_b,ts_LFint,imm
              imm_codes = imm_codes,mat_codes = mat_codes,spt_codes = spt_codes,
              est_abd = est_abd,est_by_age = est_by_age,est_by_mat = est_by_mat)
 }
+
+mark <- function(cruise_code,stratum_code,transect_code,
+                 school_length,cell_length,NASC,position,marktype_name,
+                 haul_code = NA_character_,LF=NA_real_,CS=NA_real_,
+                 nearest_transect = NA_character_){
+  #cat("~~~ Mark:constructor ~~~\n");
+  new(Class = "Mark",cruise_code = cruise_code,stratum_code = stratum_code,
+      transect_code = transect_code,school_length = school_length,cell_length = cell_length,
+      NASC = NASC,position = position,marktype_name = marktype_name,
+      haul_code = haul_code,LF = LF,CS = CS,nearest_transect = nearest_transect)
+}

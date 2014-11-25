@@ -21,6 +21,9 @@ setGeneric(name="setHeading",def=function(object,value){standardGeneric("setHead
 setGeneric(name="getDepth",def=function(object){standardGeneric("getDepth")})
 setGeneric(name="setDepth",def=function(object,value){standardGeneric("setDepth")})
 
+#getPosition
+setGeneric(name="getPosition",def=function(object){standardGeneric("getPosition")})
+
 #getDepthUnit,setDepthUnit
 #generics for retrieving/setting the depth unit
 setGeneric(name="getDepthUnit",def=function(object){standardGeneric("getDepthUnit")})
@@ -48,6 +51,13 @@ setGeneric(name="getCruiseCode",def=function(object){standardGeneric("getCruiseC
 
 #getStratumCode
 setGeneric(name="getStratumCode",def=function(object){standardGeneric("getStratumCode")})
+
+#getTransectCode
+setGeneric(name="getTransectCode",def=function(object){standardGeneric("getTransectCode")})
+
+#getHaulCode, setHaulCode
+setGeneric(name="getHaulCode",def=function(object){standardGeneric("getHaulCode")})
+setGeneric(name="setHaulCode",def=function(object,value){standardGeneric("setHaulCode")})
 
 #getName
 #generic for retrieving the code of a cruise/stratum/transect
@@ -88,12 +98,17 @@ setGeneric(name="getSouthernLimit",def=function(object){standardGeneric("getSout
 setGeneric(name="getEasternLimit",def=function(object){standardGeneric("getEasternLimit")})
 setGeneric(name="getWesternLimit",def=function(object){standardGeneric("getWesternLimit")})
 
-#generic to get/set biological data for hauls, targetSpecies
+#generic to get/set biological data for hauls, targetSpecies, Marks
 setGeneric(name="getLFRange",def=function(object,species){standardGeneric("getLFRange")})
 setGeneric(name="getLW",def=function(object,species){standardGeneric("getLW")})
 setGeneric(name="setLW",def=function(object,value){standardGeneric("setLW")})
 setGeneric(name="getLA",def=function(object,species){standardGeneric("getLA")})
 setGeneric(name="getLM",def=function(object,species){standardGeneric("getLM")})
+setGeneric(name="getLF",def=function(object){standardGeneric("getLF")})
+setGeneric(name="setLF",def=function(object,value){standardGeneric("setLF")})
+setGeneric(name="setCS",def=function(object,Species,Target){standardGeneric("setCS")})
+setGeneric(name="getCS",def=function(object){standardGeneric("getCS")})
+setGeneric(name="getMarkType",def=function(object){standardGeneric("getMarkType")})
 
 #getTrackLength_nm
 #versions implemented for mark, transect, stratum, cruise
@@ -135,14 +150,18 @@ setGeneric(name="getAgeRange",def=function(object,name){standardGeneric("getAgeR
 setGeneric(name="getNumMarks",def=function(object){standardGeneric("getNumMarks")})
 setGeneric(name="setNumMarks",def=function(object,name,value){standardGeneric("setNumMarks")})
 
-#getCellLengths
+#getCellLength(s)
 setGeneric(name="getCellLengths",def=function(object,name){standardGeneric("getCellLengths")})
+setGeneric(name="getCellLength",def=function(object){standardGeneric("getCellLength")})
 
 #getMixedSpecies
 setGeneric(name="getMixedSpecies",def=function(object){standardGeneric("getMixedSpecies")})
 
 #getNASCName
 setGeneric(name="getNASCName",def=function(object){standardGeneric("getNASCName")})
+
+#getNASC
+setGeneric(name="getNASC",def=function(object){standardGeneric("getNASC")})
 
 #getIncludeInEstimates
 setGeneric(name="getIncludeInEstimates",def=function(object){standardGeneric("getIncludeInEstimates")})
@@ -152,10 +171,17 @@ setGeneric(name="getEstAbd",def=function(object){standardGeneric("getEstAbd")})
 setGeneric(name="getEstByAge",def=function(object){standardGeneric("getEstByAge")})
 setGeneric(name="getEstByMat",def=function(object){standardGeneric("getEstByMat")})
 
-#assignHaul
+#assignHaul,Transect (merge these two?)
 setGeneric(name="assignHaul",def=function(object,pos){standardGeneric("assignHaul")})
+setGeneric(name="assignTransect",def=function(object,tran){standardGeneric("assignTransect")})
 
-#abundance
-#calculate abundance
+#abundance/biomass
+#calculate abundance/biomass
 #versions implemented for Mark,Transect,Stratum,MarkType
 setGeneric(name="abundance",def=function(object,target){standardGeneric("abundance")})
+setGeneric(name="biomass",def=function(object,LW,target){standardGeneric("biomass")})
+
+#getSchoolLength, setSchoolLength
+setGeneric(name="getSchoolLength",def=function(object){standardGeneric("getSchoolLength")})
+setGeneric(name="setSchoolLength",def=function(object,value){standardGeneric("setSchoolLength")})
+
