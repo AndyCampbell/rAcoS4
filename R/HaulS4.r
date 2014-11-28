@@ -1,5 +1,11 @@
 #the Haul class
-
+#' An S4 class to represent a haul
+#'
+#' @details
+#' HaulS4 class documentation
+#'
+#' @include WayPointS4.r
+#'
 setClass(
   "Haul",
   representation(code = "character",
@@ -24,7 +30,7 @@ setClass(
     if (length(object@cruise_code)==0){
       stop("[Haul: validation] Cruise code is mandatory");
     }
-    
+
     #for each species, the bio vectors (length, weight, age and maturity)
     #must be of the same length
     if (length(names(object@species)) > 0) {
@@ -33,11 +39,11 @@ setClass(
                             length(object@species[[i]]$weight),
                             length(object@species[[i]]$age),
                             length(object@species[[i]]$maturity))))==1) {
-          TRUE;          
+          TRUE;
         } else {
           #report error
           stop(paste("Error with ",names(object@species)[i]," in haul",object@code,sep=""));
-        }        
+        }
       }
     }
     #default return value
@@ -121,7 +127,7 @@ setMethod(
         #do not return NAs
         return(list(len=object@species[[spe]][['length']][!(is.na(object@species[[spe]][['length']]) | is.na(object@species[[spe]][['age']]))],
                     age=object@species[[spe]][['age']][!(is.na(object@species[[spe]][['length']]) | is.na(object@species[[spe]][['age']]))]));
-      } 
+      }
     }
     #default return
     return(list(len=NULL,age=NULL));
@@ -131,7 +137,7 @@ setMethod(
 setMethod(
   f = "getLM",
   signature = "Haul",
-  definition = function(object,species){  
+  definition = function(object,species){
     if (length(object@species) > 0) {
       #species in Haul is in upper case
       spe <- toupper(species);
@@ -142,7 +148,7 @@ setMethod(
       }
     }
     #default return
-    return(list(len=NULL,mat=NULL));    
+    return(list(len=NULL,mat=NULL));
   }
 );
 
@@ -186,19 +192,19 @@ getHaulLF <- function(haul.code,species,raised=FALSE){
 
   #TO DO - rewrite this, can return nothing and also it's not
   #required to loop through hauls, can use @ within the class
-  
+
   #return the LF for the haul/species specified
   for (i in 1:length(Hauls)){
-    
+
     if (getCode(Hauls[[i]]) == haul.code) {
 
       num <- Hauls[[i]]@species[[species]]$num.at.len;
       if(raised){num<-num*Hauls[[i]]@species[[species]]$tot.wgt/Hauls[[i]]@species[[species]]$sub.samp.wgt}
-      
+
       names(num) <- Hauls[[i]]@species[[species]]$len.class;
-      
+
       return(num);
-    
+
     }
   }
 }
@@ -210,9 +216,9 @@ getLFProp <- function(haul.code,species,mix.species=c()){
   #(as in with mixed hauls), otherwise only the species identified is used
 
   #cat("getLFProp\n")
-  
+
   code <- as.character(haul.code)
-  
+
   #species list
   spe<-c(species,mix.species)
   spe<-toupper(spe)
@@ -221,26 +227,26 @@ getLFProp <- function(haul.code,species,mix.species=c()){
   #spe <- names(Hauls[[code]]@species)
 
   #for (i in 1:length(spe)){cat("spe[",i,"]=",spe[i],"\n")}
-  
+
   if (length(spe)==1) {
     LFs <- list(getHaulLF(haul.code=code,spe[1],raised=TRUE))
   } else {
     #get the LFs for each species
-    #LFs <- sapply(spe,getHaulLF,haul.code=code,raised=TRUE)  
+    #LFs <- sapply(spe,getHaulLF,haul.code=code,raised=TRUE)
     LFs <- lapply(as.list(spe),getHaulLF,haul.code=code,raised=TRUE)
   }
-  
+
   #len.range <- range(as.numeric(names(LFs)))
   len.range <- range(as.numeric(unlist(lapply(LFs,names))))
-  
+
 #   cat(len.range[1],len.range[2],"\n")
-  
+
   #generate a sequence of lengths
   #use the half cm for now
   #TO DO - code for varying length intervals?
   #or will 0.5 do for all
   l<-seq(len.range[1],len.range[2],0.5)
-  
+
   #create return list
   ret<-vector("list",length(spe))
   names(ret)<-c(spe)
@@ -260,7 +266,7 @@ getLFProp <- function(haul.code,species,mix.species=c()){
 #    }
   }
 
-  #if all species then make sure all LFs sum to 
+  #if all species then make sure all LFs sum to
   #unity and not individually
   if(length(spe)>1){
   #if(all.species){
@@ -268,70 +274,70 @@ getLFProp <- function(haul.code,species,mix.species=c()){
     tot<-sum(unlist(lapply(ret,sum)))
     for (j in 1:length(LFs)){
       ret[[j]]<-ret[[j]]/tot
-    }    
+    }
   } else {
     #individually normalised
     for (j in 1:length(LFs)){
       ret[[j]]<-ret[[j]]/sum(ret[[j]])
     }
   }
-  
+
   return(ret)
-  
-  
+
+
 #   #get the required species LF
 #   LF <- getHaulLF(haul.code,species);
-# 
+#
 #   if (all.species) {
-#     
+#
 #     for (i in 1:length(Hauls)){
-#       
-#       if (getCode(Hauls[[i]]) == haul.code) {      
-#         
+#
+#       if (getCode(Hauls[[i]]) == haul.code) {
+#
 #         spe <- names(Hauls[[i]]@species);
-#         
+#
 #         #get the LF range
 #         minL<-999
 #         maxL<-0
-# 
+#
 #         for (j in 1:length(spe)){
 #           minL<-min(minL,min(Hauls[[i]]@species[[spe[j]]]$len.class))
 #           maxL<-max(maxL,max(Hauls[[i]]@species[[spe[j]]]$len.class))
 #         }
-#       
+#
 #         lgth<-seq(minL,maxL,by=0.5)
-#         
+#
 #         #create a matrix to hold the LFs
 #         tmat<-matrix(0,nrow=length(lgth),ncol=length(spe),
 #                      dimnames=list(as.character(lgth),spe))
-#         
+#
 #         for (j in 1:length(spe)){
-#           
+#
 #           #length class
 #           lc<-Hauls[[i]]@species[[spe[j]]]$len.class
 #           #raised number
 #           num<-Hauls[[i]]@species[[spe[j]]]$num.at.len
 #           num<-num*Hauls[[i]]@species[[spe[j]]]$tot.wgt/Hauls[[i]]@species[[spe[j]]]$sub.samp.wgt
-#           
+#
 #           for (k in 1:length(lc)){
 #             #cat(j,k,lc[k],"\n")
 #             row.idx<-which(rownames(tmat)==as.character(lc[k]))
 #             #cat(row.idx,"\n")
 #             tmat[row.idx,j]<-num[k]
 #           }
-#           
-#         }  
-#         
+#
+#         }
+#
 #         #cat(tmat/sum(tmat),"\n")
-#         
+#
 #         return(tmat[,which(colnames(tmat)==species)]/sum(tmat))
-#         
+#
 #       }
 #     }
 #   }
-#     
+#
 #   return (LF/sum(LF));
-  
+
 }
 
 #summary method
@@ -339,11 +345,11 @@ setMethod(
   f = "summary",
   signature = "Haul",
   definition = function(object,visible=TRUE,report=FALSE){
-    
+
     #if visible, print the details to the screen,
     #otherwise suppress them. Info is returned invisibly
     #if report is true function returns line for insertion in report table
-    
+
     #report line is a comma separated string with
     #haul number
     #haul date
@@ -354,12 +360,12 @@ setMethod(
     #bottom depth (to do)
     #bulk catch
     #sampled catch
-    
+
     #haul num
     repLine = object@code
     #haul date
     repLine <- paste(repLine,strftime(object@haul_wp@time,"%d/%m/%Y"),sep=",")
-    #haul time 
+    #haul time
     repLine <- paste(repLine,strftime(object@haul_wp@time,"%H:%M"),sep=",")
     #haul latitude
     repLine <- paste(repLine,sprintf("%.1f",object@haul_wp@lat),sep=",")
@@ -383,44 +389,44 @@ setMethod(
     } else {
       t4Names <- names(top4)
     }
-    
+
     haulSamples <- sum(lapply(Samples,"[",Samples$HaulNo==object@code)$TotalWeight,na.rm=T)
 
     if (haulSamples==0){
       repLine = paste(repLine,"0.0,0.0,0.0,0.0,0.0",sep="")
     } else {
-    
+
       #percentage topmost
       #species samples
       speSamples<-lapply(Samples,"[",Samples$SpeciesName==toupper(Species[[t4Names[1]]]@species))
       pctT1 <- 100.0*(sum(lapply(speSamples,"[",speSamples$HaulNo==object@code)$TotalWeight,na.rm=T)/haulSamples)
       repLine <- paste(repLine,sprintf("%.1f",pctT1),sep=",")
-      
+
       #percentage next
       speSamples<-lapply(Samples,"[",Samples$SpeciesName==toupper(Species[[t4Names[2]]]@species))
       pctT2 <- 100.0*(sum(lapply(speSamples,"[",speSamples$HaulNo==object@code)$TotalWeight,na.rm=T)/haulSamples)
       repLine <- paste(repLine,sprintf("%.1f",pctT2),sep=",")
-      
+
       #percentage next
       speSamples<-lapply(Samples,"[",Samples$SpeciesName==toupper(Species[[t4Names[3]]]@species))
-      pctT3 <- 100.0*(sum(lapply(speSamples,"[",speSamples$HaulNo==object@code)$TotalWeight,na.rm=T)/haulSamples)  
+      pctT3 <- 100.0*(sum(lapply(speSamples,"[",speSamples$HaulNo==object@code)$TotalWeight,na.rm=T)/haulSamples)
       repLine <- paste(repLine,sprintf("%.1f",pctT3),sep=",")
-      
+
       #percentage next
       speSamples<-lapply(Samples,"[",Samples$SpeciesName==toupper(Species[[t4Names[4]]]@species))
       pctT4 <- 100.0*(sum(lapply(speSamples,"[",speSamples$HaulNo==object@code)$TotalWeight,na.rm=T)/haulSamples)
       repLine <- paste(repLine,sprintf("%.1f",pctT4),sep=",")
-      
+
       #remainder
       repLine <- paste(repLine,sprintf("%.1f",100.0-pctT1-pctT2-pctT3-pctT4),sep=",")
-    
-    }    
-    
+
+    }
+
     if (report){
       if (visible){
         cat(repLine,"\n")
-      }      
-      return(repLine)      
+      }
+      return(repLine)
     } else if (visible) {
       cat("************************************\n");
       cat("Haul code:",object@code,"\n");
@@ -430,17 +436,17 @@ setMethod(
       cat("Haul:\n");
       cat(summary(object@haul_wp));
       cat(names(object@species),"\n");
-      cat("************************************\n");          
+      cat("************************************\n");
       invisible(list(number = object@code,date = 0,time = 0,
                      lat = 0,lon = 0,tgtDepth = 0,
-                     depth = 0,bulk = 0,sampled = 0))      
+                     depth = 0,bulk = 0,sampled = 0))
     } else {
       #invisibly return details
       invisible(list(number = object@code,date = 0,time = 0,
                      lat = 0,lon = 0,tgtDepth = 0,
-                     depth = 0,bulk = 0,sampled = 0))      
+                     depth = 0,bulk = 0,sampled = 0))
     }
-    
+
   }
 
 );

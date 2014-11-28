@@ -1,6 +1,11 @@
 #the Cruise class
 #contains cruise metadata (name, code, start and end dates)
-
+#' An S4 class to represent an acoustic survey cruise
+#'
+#' @details
+#' CruiseS4 class documentation
+#'
+#'
 setClass(
   "Cruise",
   representation(code = "character",

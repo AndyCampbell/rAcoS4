@@ -2,6 +2,12 @@
 #class with species specific details
 #including target strength, len bin, maturity codes
 
+#' An S4 class to represent a target species
+#'
+#' @details
+#' TargetSpeciesS4 class documentation
+#'
+#'
 setClass(
   "TargetSpecies",
   representation(species = "character",
@@ -31,20 +37,20 @@ setClass(
             est_by_age = FALSE,
             est_by_mat = FALSE),
   validity = function(object){
-    
+
     #cat("~~~ TargetSpecies:inspector ~~~\n");
-    
+
     if (length(object@species)==0){
       stop("[TargetSpecies: validation] species is mandatory");
     }
     if (length(object@LF_bin_size)==0){
       stop("[TargetSpecies: validation] LF Bin Size is mandatory");
     }
-    
+
     return(TRUE);
-    
+
   }
-  
+
 );
 
 #initialize method
@@ -68,7 +74,7 @@ setMethod(
     .Object@est_abd <- est_abd
     .Object@est_by_age <- est_by_age
     .Object@est_by_mat <- est_by_mat
-    
+
     #call the inspector
     validObject(.Object);
     return(.Object);
@@ -80,26 +86,26 @@ setMethod(
   f = "summary",
   signature = "TargetSpecies",
   definition = function(object,visible=TRUE){
-    
+
     #if visible, print the details to the screen,
     #otherwise suppress them. Info is returned invisibly
-    
+
     speciesName <- object@species
     speciesCommon <- object@common_name
-    
+
     #print details to console if visible flag is true
     if(visible){
-      
+
       cat("************************************\n");
       cat("Species:",speciesName,"\n");
-      cat("Common Name:",speciesCommon,"\n");    
+      cat("Common Name:",speciesCommon,"\n");
       cat("************************************\n");
-      
+
     }
-    
+
     #invisibly return details
     invisible(list(speciesName = speciesName,commonName = speciesCommon))
-    
+
   }
 );
 
@@ -107,11 +113,11 @@ setMethod(
   f = "getName",
   signature = "TargetSpecies",
   definition = function(object){
-    
+
     #return the name of the species
-    
+
     return(toupper(object@species));
-    
+
   }
 );
 
@@ -193,25 +199,25 @@ setMethod(
   f = "plot",
   signature = "TargetSpecies",
   definition = function(x,y,filename,...){
-  
+
     if (length(x@LW)>0) {
-      
+
       #if a filename has been provided, open the device
       if(!missing(filename)) {
         png(filename=filename,width=480,height=480);
       }
-      
+
       #length-weight plot for species
       plot(x@LW$len,x@LW$wgt,type="p",pch=3,
            xlab="Length (cm)",ylab="Weight (g)",
            main=x@common_name,bty="n")
       mtext(x@species,side=3,line=0)
-      
+
       pl<-seq(from=min(x@LW$len,na.rm=TRUE),to=max(x@LW$len,na.rm=TRUE),length.out=1000)
       lines(pl,x@LW$a*pl^x@LW$b,lwd=1,col="red")
-          
+
       dev.off()
-    } 
-    
+    }
+
   }
 );

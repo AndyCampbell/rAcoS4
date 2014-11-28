@@ -1,7 +1,13 @@
 #the Transect class
-#a transect consists of a start and end position and associated 
+#a transect consists of a start and end position and associated
 #date/times. They are assigned a code and belong to a stratum
 
+#' An S4 class to represent an acoustic survey transect
+#'
+#' @details
+#' TransectS4 class documentation
+#'
+#'
 setClass(
   "Transect",
   representation(code = "character",
@@ -41,9 +47,9 @@ prototype(code = NA_character_,
           bio_at_age = NULL,
           bio_at_mat = NULL),
   validity = function(object){
-    
+
     #cat("~~~ Transect:inspector ~~~\n");
-    
+
     if (length(object@code)==0){
       stop("[Transect: validation] Transect code is mandatory");
     }
@@ -53,11 +59,11 @@ prototype(code = NA_character_,
     if (length(object@cruise_code)==0){
       stop("[Haul: validation] Cruise code is mandatory");
     }
-    
+
     return(TRUE);
-    
+
   }
-  
+
 );
 
 #initialize method
@@ -69,7 +75,7 @@ setMethod(
                         mean_abundance=0,mean_biomass=0,
                         abd_at_len=list(),abd_at_age=list(),abd_at_mat=list(),
                         bio_at_len=list(),bio_at_age=list(),bio_at_mat=list()){
-    
+
     #cat("~~~ Transect:initializer ~~~\n");
     .Object@code <- code
     .Object@stratum_code <- stratum_code
@@ -78,23 +84,23 @@ setMethod(
     .Object@end_pos <- end_pos
     .Object@start_time <- start_time
     .Object@end_time <- end_time
-    
+
     #Ian Doonan's code (replace with VincentyEllipsoid call once testing is complete)
     .Object@distance_km <- ToKm(start_pos@lat,start_pos@lon,end_pos@lat,end_pos@lon);
     #in nm
-    .Object@distance_nm <- .Object@distance_km/1.852;    
-    
+    .Object@distance_nm <- .Object@distance_km/1.852;
+
     .Object@marks <- marks;
     .Object@mean_abundance <- mean_abundance;
     .Object@mean_biomass <- mean_biomass;
-    
+
     .Object@abd_at_len <- abd_at_len;
     .Object@abd_at_age <- abd_at_age;
     .Object@abd_at_mat <- abd_at_mat;
     .Object@bio_at_len <- bio_at_len;
     .Object@bio_at_age <- bio_at_age;
     .Object@bio_at_mat <- bio_at_mat;
-    
+
     #call the inspector
     validObject(.Object);
     return(.Object);
@@ -111,7 +117,7 @@ setMethod(
   signature = "Transect",
   definition = function(object){
     #cat("~~~ Transect:getCode ~~~\n");
-    return(object@code);  
+    return(object@code);
   }
 );
 
@@ -121,7 +127,7 @@ setMethod(
   signature = "Transect",
   definition = function(object){
     #cat("~~~ Transect:getLengthKm ~~~\n");
-    return(object@distance_km);  
+    return(object@distance_km);
   }
 );
 
@@ -151,7 +157,7 @@ setMethod(
   signature = "Transect",
   definition = function(object){
     #cat("~~~ Transect:getStratumCode ~~~\n");
-    return(object@stratum_code);  
+    return(object@stratum_code);
   }
 );
 
@@ -161,7 +167,7 @@ setMethod(
   signature = "Transect",
   definition = function(object){
     #cat("~~~ Transect:getCruiseCode ~~~\n");
-    return(object@cruise_code);  
+    return(object@cruise_code);
   }
 );
 
@@ -169,7 +175,7 @@ setMethod(
   f = "getMeanAbundance",
   signature = "Transect",
   definition = function(object,marktype=NULL){
-    
+
     if (is.null(marktype)) {
       if (any(object@mean_abundance>0)){
         return(object@mean_abundance[object@mean_abundance>0]);
@@ -191,12 +197,12 @@ setMethod(
   f = "getAbdAtLen",
   signature = "Transect",
   definition = function(object,marktypes){
-    
+
     #if no marktype is supplied include all available
     if(missing(marktypes)){marktypes <- names(object@abd_at_len)}
 
     if (is.null(marktypes)) return(NULL);
-    
+
     ret <- object@abd_at_len[[marktypes[1]]]
 
     if (length(marktypes)>1){
@@ -204,11 +210,11 @@ setMethod(
         ret <- ret + object@abd_at_len[[marktypes[i]]]
       }
     }
-    
+
     if (any(ret>0)) {
-      return(ret);  
+      return(ret);
     }
-    
+
     return(NULL);
   }
 )
@@ -228,26 +234,26 @@ setMethod(
   f = "getAbdAtAge",
   signature = "Transect",
   definition = function(object,marktypes){
-    
+
     #if no marktype is supplied include all available
     if(missing(marktypes)){marktypes <- names(object@abd_at_age)}
-    
+
     if (is.null(marktypes)) return(NULL);
-    
+
     ret <- object@abd_at_age[[marktypes[1]]]
-    
+
     if (length(marktypes)>1){
       for(i in 2:length(marktypes)){
         ret <- ret + object@abd_at_age[[marktypes[i]]]
       }
     }
-    
+
     if (any(ret>0)) {
-      return(ret);  
+      return(ret);
     }
-    
+
     return(NULL);
-    
+
   }
 )
 
@@ -275,37 +281,37 @@ setMethod(
 #   f = "getAbdAtMat",
 #   signature = "Transect",
 #   definition = function(object,groups){
-#     
+#
 #     if (any(object@abd_at_mat>0)) {
-#       
+#
 #       #if groups are missing, return all data
 #       if(missing(groups)) return(object@abd_at_mat);
-#       
+#
 #       ret<-vector("numeric",length(groups));
 #       names(ret) <- names(groups);
-#       
+#
 #       for (i in seq(length(groups))){
 #         ret[i] <- 0;
 #         if (any(object@abd_at_mat[groups[[i]]]>0)) {
 #           ret[i] <- sum(object@abd_at_mat[groups[[i]]])
 #         }
 #       }
-#       
+#
 #       return(ret);
-#       
+#
 #     }
-#     
+#
 #     if(missing(groups)) return(0);
-#     
+#
 #     ret<-vector("numeric",length(groups));
 #     names(ret) <- names(groups);
-#     
+#
 #     for (i in seq(length(groups))){
 #       ret[i] <- 0;
 #     }
-#     
+#
 #     return(ret);
-#     
+#
 #   }
 # )
 
@@ -339,7 +345,7 @@ setMethod(
       }
     }
     return(0);
-    
+
   }
 )
 
@@ -348,7 +354,7 @@ setMethod(
 #   signature = "Transect",
 #   definition = function(object,name){
 #     if (any(object@bio_at_len[[name]]>0)) {
-#       return(object@bio_at_len[[name]]);  
+#       return(object@bio_at_len[[name]]);
 #     }
 #     return(NULL);
 #   }
@@ -358,24 +364,24 @@ setMethod(
   f = "getBioAtLen",
   signature = "Transect",
   definition = function(object,marktypes){
-    
+
     #if no marktype is supplied include all available
     if(missing(marktypes)){marktypes <- names(object@bio_at_len)}
-    
+
     if (is.null(marktypes)) return(NULL);
-    
+
     ret <- object@bio_at_len[[marktypes[1]]]
-    
+
     if (length(marktypes)>1){
       for(i in 2:length(marktypes)){
         ret <- ret + object@bio_at_len[[marktypes[i]]]
       }
     }
-    
+
     if (any(ret>0)) {
-      return(ret);  
+      return(ret);
     }
-    
+
     return(NULL);
   }
 )
@@ -397,7 +403,7 @@ setMethod(
   signature = "Transect",
   definition = function(object,marktypes){
     if (any(object@bio_at_age>0)) {
-      return(object@bio_at_age);  
+      return(object@bio_at_age);
     }
     return(NULL);
   }
@@ -418,7 +424,7 @@ setMethod(
 #   signature = "Transect",
 #   definition = function(object){
 #     if (any(object@bio_at_mat>0)) {
-#       return(object@bio_at_mat);  
+#       return(object@bio_at_mat);
 #     }
 #     return(NULL);
 #   }
@@ -458,7 +464,7 @@ setMethod(
   f = "getTrackLength_nm",
   signature = "Transect",
   definition = function(object){
-    return(object@distance_nm);  
+    return(object@distance_nm);
   }
 );
 
@@ -466,7 +472,7 @@ setMethod(
   f = "getCellLengths",
   signature = "Transect",
   definition = function(object,name){
-    return(rep(object@distance_nm,length(object@abd_at_len[[name]])));  
+    return(rep(object@distance_nm,length(object@abd_at_len[[name]])));
   }
 );
 
@@ -493,9 +499,9 @@ setMethod(
         }
       }
     } else {
-      cat("\tNone\n")      
+      cat("\tNone\n")
     }
-    
+
     cat("Mean Abundance:\n")
     if (!is.null(names(object@marks))) {
       for (i in 1:length(names(object@marks))){
@@ -506,9 +512,9 @@ setMethod(
     } else {
       cat("\t0\n")
     }
-    
+
     cat("Mean Biomass:\n")
-    if (!is.null(names(object@marks))) {      
+    if (!is.null(names(object@marks))) {
       for (i in 1:length(names(object@marks))){
         if (nchar(names(object@marks)[i])>0) {
           cat("\t",object@mean_biomass[names(object@marks)[i]],"(",names(object@marks)[i],")\n")

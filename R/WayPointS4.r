@@ -1,5 +1,11 @@
 #the WayPoint class
-
+#' An S4 class to represent a waypoint
+#'
+#' @details
+#' WayPointS4 class documentation
+#'
+#' @include GeoPointS4.r
+#'
 setClass(
   "WayPoint",
   representation(time = "POSIXlt",

@@ -1,5 +1,9 @@
-#CTD Station Class
-
+#' An S4 class to represent a CTD station
+#'
+#' @slot code CTD station code
+#'
+#' @include GeoPointS4.r
+#'
 setClass(
   "CTDStation",
   representation(code = "character",

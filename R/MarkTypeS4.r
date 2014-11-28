@@ -1,3 +1,9 @@
+#'
+#' An S4 class to represent an acoustic mark type
+#'
+#' @details
+#' MarkTypeS4 class documentation
+#'
 setClass(
   "MarkType",
   representation(name = "character",
@@ -17,17 +23,17 @@ setClass(
             mixed_with = NA_character_,
             hauls = NA_character_),
   validity = function(object){
-    
+
     #cat("~~~ MarkType:inspector ~~~\n");
-    
+
     if (length(object@name)==0){
       stop("[MarkType: validation] name is mandatory");
     }
-    
+
     return(TRUE);
-    
+
   }
-  
+
 );
 
 #initialize method
@@ -45,7 +51,7 @@ setMethod(
     .Object@haul_assignment <- haul_assignment
     .Object@mixed_with <- mixed_with
     .Object@hauls <- hauls
-    
+
     #call the inspector
     validObject(.Object);
     return(.Object);
@@ -65,7 +71,7 @@ setMethod(
   signature = "MarkType",
   definition = function(object){
     #return the maturity codes for mature fish
-    
+
     #find the code from the species details
     return(c(
       getMatureCodes(Species[[which(toupper(lapply(Species,getName))==toupper(object@species))]]),
@@ -120,40 +126,40 @@ setMethod(
   f = "assignHaul",
   signature = "MarkType",
   definition = function(object,pos){
-    
+
     #cat("assignHaul\n")
-    
+
     #return the appropriate Haul number to assign
     #pos is the geopoint of the mark position
-    
+
     dist<-rep(10e6,length(object@hauls));
     names(dist)<-object@hauls;
-    
+
     #loop over hauls assigned for this marktype
     for (i in 1:length(object@hauls)){
 
       #retrieve the haul position
       if (isValid(object@hauls[i])) {
-        
+
         shoot<-shootPos(object@hauls[i]);
-        
+
         dist[i]<-ToKm(shoot[1],
                       shoot[2],
                       getLat(pos),
                       getLon(pos));
-        
+
         #dist[i]<- distVincentyEllipsoid(c(shootPos(object@hauls[i])@lon,
         #                             shootPos(object@hauls[i])@lat),
         #                             c(pos@lon,pos@lat));
       }
     }
-    
+
     #cat(names(dist),"\n")
     #cat(dist,"\n")
-    
+
     #return haul code for nearest haul to pos
     return(names(sort(dist))[1]);
-    
+
   }
 );
 
@@ -161,10 +167,10 @@ setMethod(
   f = "abundance",
   signature = "MarkType",
   definition = function(object){
-    
+
     #TO DO - return the total abundance at length for this MarkType
-    
+
     return(0);
   }
-  
+
 );

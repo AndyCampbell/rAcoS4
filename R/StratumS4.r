@@ -2,6 +2,12 @@
 #a type, boundary, cruise and stratumcode define a stratum
 #additionally an area is calculated on initialization
 
+#' An S4 class to represent an acoustic survey stratum
+#'
+#' @details
+#' StratumS4 class documentation
+#'
+#'
 setClass(
   "Stratum",
   representation(code = "character",
@@ -35,9 +41,9 @@ setClass(
             bio_at_age = NULL,
             bio_at_mat = NULL),
   validity = function(object){
-    
+
     #cat("~~~ Stratum:inspector ~~~\n");
-    
+
     if (length(object@code)==0){
       stop("[Stratum: validation] Stratum code is mandatory");
     }
@@ -48,12 +54,12 @@ setClass(
 
     if (!(length(object@boundary_lat)==length(object@boundary_lon))) {
       stop("Lengths of boundary latitude and longitude vectors should be equal");
-    } 
-    
+    }
+
     return(TRUE);
-    
+
   }
-  
+
 );
 
 #initialize method
@@ -70,7 +76,7 @@ setMethod(
     .Object@cruise_code <- cruise_code
     .Object@type <- type
     .Object@boundary_lat <- boundary_lat
-    .Object@boundary_lon <- boundary_lon    
+    .Object@boundary_lon <- boundary_lon
     #Ian's code for now
     .Object@area <- AreaLongLat(boundary_lon,boundary_lat)/(1.852*1.852)
     .Object@ICESarea <- ICESarea
@@ -139,7 +145,7 @@ setMethod(
   signature = "Stratum",
   definition = function(object){
     #cat("~~~ Stratum:getCode ~~~\n");
-    return(object@code);  
+    return(object@code);
   }
 );
 
@@ -150,7 +156,7 @@ setMethod(
   signature = "Stratum",
   definition = function(object){
     #cat("~~~ Stratum:getCruiseCode ~~~\n");
-    return(object@cruise_code);  
+    return(object@cruise_code);
   }
 );
 
@@ -160,11 +166,11 @@ setMethod(
   f = "summary",
   signature = "Stratum",
   definition = function(object,visible=TRUE,report=FALSE){
-    
+
     #if visible, print the details to the screen,
     #otherwise suppress them. Info is returned invisibly
     #if report is true function returns line for insertion in report table
-    
+
     #repLine is a line for the table 9 report. It contains the following
     #1 Stratum Name
     #2 Num of transects
@@ -179,7 +185,7 @@ setMethod(
     #11 Total biomass (in thousands of tonnes)
     #12 Total SSB (in thousands of tonnes)
     #13 Abundance (in millions)
-    
+
     stratumCode <- object@code
     cruiseCode <- object@cruise_code
     stratumType <- object@type
@@ -188,7 +194,7 @@ setMethod(
     trackLength <- getTrackLength_nm(object)
     contTrans <- names(Transects[lapply(Transects,getStratumCode)==object@code])
     numTrans <- length(contTrans)
-    
+
     #initialise totals to zero
     marktotals <- 0
     abd_at_age <- 0
@@ -199,16 +205,16 @@ setMethod(
     abd <- 0
     ssb <- 0
     ssb_abd <- 0
-    
+
     repLine <- stratumCode
-    
+
     #contains transects
     tr<-Transects[lapply(Transects,getStratumCode)==object@code]
-    
+
     #number of marks and their types on each transect
     tr.marks <- lapply(tr,getNumMarks)
     #set any possibly mark counts to zero as we don't want to include them here
-        
+
     for (m in 1:length(tr.marks)){
       if (sum(grepl("Possibly",names(tr.marks[[m]])))>0) {
         full.name <- names(tr.marks[[m]])[grepl("Possibly",names(tr.marks[[m]]))]
@@ -218,17 +224,17 @@ setMethod(
 
     #find total numbers
     totalMarks <- lapply(tr.marks,sum)
-    
-    
+
+
     #append number of transects to report line
     repLine <- paste(repLine,length(tr),sep=",")
-    
+
     #find total marks by type
     mark.names<-c()
     for (i in 1:length(tr)){mark.names<-unique(c(mark.names,names(tr[[i]]@marks[nchar(names(tr[[i]]@marks))>0])))}
-    
+
     if (length(mark.names)>0) {
-      
+
       totals<-bio<-abd<-ssb<-ssb_abd<-vector("integer",length=length(mark.names))
       names(totals)<-names(bio)<-names(abd)<-names(ssb)<-names(ssb_abd)<-mark.names
 
@@ -239,7 +245,7 @@ setMethod(
         ssb[j] <- sum(object@bio_at_mat[[j]][getMatureCodes(MarkTypes[[j]])])*object@area
         ssb_abd[j] <- sum(object@abd_at_mat[[j]][getMatureCodes(MarkTypes[[j]])])*object@area
       }
-      
+
       for (i in 1:length(tr)){
         for (j in 1:length(names(totals))){
           if (!is.na(tr[[i]]@marks[names(totals)[j]])) {
@@ -249,16 +255,16 @@ setMethod(
           }
         }
       }
-      
+
       marktotals<-totals
-      
+
       #at age/mat details
       #should be ok adding these lists as they will be of the same length (num/bio per age/mat)
       abd_at_age <- object@abd_at_age[[1]]
       bio_at_age <- object@bio_at_age[[1]]
       abd_at_mat <- object@abd_at_mat[[1]]
       bio_at_mat <- object@bio_at_mat[[1]]
-      
+
       if (length(mark.names)>1) {
         for (i in 2:length(mark.names)){
           abd_at_age <- abd_at_age + object@abd_at_age[[i]]
@@ -267,14 +273,14 @@ setMethod(
           bio_at_mat <- bio_at_mat + object@bio_at_mat[[i]]
         }
       }
-      
+
       #multiply by stratum area to get totals
       abd_at_age <- object@area*abd_at_age
       bio_at_age <- object@area*bio_at_age
       abd_at_mat <- object@area*abd_at_mat
       bio_at_mat <- object@area*bio_at_mat
     }
-  
+
     #append total number of schools to report line (less number of possibles)
     repLine <- paste(repLine,sum(marktotals) - sum(marktotals[grepl('Possibly',names(marktotals))]),sep=",")
     #append number of definite schools (must have 'Definitely' in name)
@@ -287,19 +293,19 @@ setMethod(
     repLine <- paste(repLine,sprintf("%.0f",100.0*sum(totalMarks==0)/length(totalMarks)),sep=",")
     #append definite biomass in thousand t
     if (sum(grepl('Definitely',names(bio)))>0) {
-      repLine <- paste(repLine,sprintf("%.1f",bio[grepl('Definitely',names(bio))]/1e3),sep=",")  
+      repLine <- paste(repLine,sprintf("%.1f",bio[grepl('Definitely',names(bio))]/1e3),sep=",")
     } else {
       repLine <- paste(repLine,sprintf("%.1f",0),sep=",")
     }
     #append mix biomass
     if (sum(grepl('Mix',names(bio)))>0) {
-      repLine <- paste(repLine,sprintf("%.1f",bio[grepl('Mix',names(bio))]/1e3),sep=",")  
+      repLine <- paste(repLine,sprintf("%.1f",bio[grepl('Mix',names(bio))]/1e3),sep=",")
     } else {
       repLine <- paste(repLine,sprintf("%.1f",0),sep=",")
     }
     #append probably biomass
     if (sum(grepl('Probably',names(bio)))>0) {
-      repLine <- paste(repLine,sprintf("%.1f",bio[grepl('Probably',names(bio))]/1e3),sep=",")  
+      repLine <- paste(repLine,sprintf("%.1f",bio[grepl('Probably',names(bio))]/1e3),sep=",")
     } else {
       repLine <- paste(repLine,sprintf("%.1f",0),sep=",")
     }
@@ -315,10 +321,10 @@ setMethod(
       repLine <- paste(repLine,sprintf("%.1f",0),sep=",")
     }
 
-    
+
     #print details to console if visible flag is true
     if(visible){
-      
+
       cat("************************************\n");
       cat("Stratum:",stratumCode,"\n");
       cat("Cruise Code:",cruiseCode,"\n");
@@ -334,7 +340,7 @@ setMethod(
       } else {
         cat("0\n")
       }
-    
+
       #Total abundance
       if (!is.null(names(object@mean_abundance))) {
         cat("Total Abundance:",sum(abd_at_age),"million\n")
@@ -342,7 +348,7 @@ setMethod(
           if (nchar(names(object@mean_abundance)[i])>0) {
             cat("\t",object@mean_abundance[names(object@mean_abundance)[i]]*object@area,"(",names(object@mean_abundance)[i],")\n")
           }
-        }      
+        }
       }
 
       #Total biomass
@@ -353,13 +359,13 @@ setMethod(
             cat("\t",object@mean_biomass[names(object@mean_biomass)[i]]*object@area/1000,"(",names(object@mean_biomass)[i],")\n")
           }
         }
-      }      
-    
+      }
+
       #Total SSB
       cat("************************************\n");
 
     }
-    
+
     if(!report){
       #invisibly return details
       invisible(list(stratum = stratumCode,cruisecode = cruiseCode,stratumType = stratumType,
@@ -371,7 +377,7 @@ setMethod(
     } else {
       repLine
     }
-    
+
   }
 );
 
@@ -389,7 +395,7 @@ setMethod(
   f = "getMeanAbundance",
   signature = "Stratum",
   definition = function(object,marktype=NULL){
-    
+
     if (is.null(marktype)) {
       if (any(object@mean_abundance>0)){
         return(object@mean_abundance[object@mean_abundance>0]);
@@ -404,7 +410,7 @@ setMethod(
       }
     }
     return(0)
-        
+
   }
 )
 
@@ -412,18 +418,18 @@ setMethod(
   f = "getAbdAtLen",
   signature = "Stratum",
   definition = function(object,marktypes){
-    
+
     #if no marktype is supplied include all available
     if(missing(marktypes)){marktypes <- names(object@abd_at_len)}
-    
+
     if (is.null(marktypes)) return(NULL);
-    
+
     if (length(object@abd_at_len)==0) return(NULL);
 
     #find first non-null mark type slot
     found <- FALSE
     i<-1
-    
+
     while (!found & i<=length(marktypes)) {
       if (!is.null(object@abd_at_len[[marktypes[[i]]]])){
         found<-TRUE
@@ -433,45 +439,45 @@ setMethod(
     }
 
     if (found) {
-      
+
       ret <- object@abd_at_len[[marktypes[i]]]*object@area
-      
+
       #add other mark types
       if (length(marktypes)>i){
         for(ii in (i+1):length(marktypes)){
-          
+
           if (!is.null(object@abd_at_len[[marktypes[ii]]])) {
-            
+
             #need to be careful if vectors are of different lengths
             #unique names (lengths)
             unames <- sort(unique(c(names(ret),names(object@abd_at_len[[marktypes[ii]]]))))
-            
+
             newret <- vector("numeric",length(unames))
             newret <- rep(0,length(unames))
             names(newret) <- unames
-            
+
             for (i in unames){
               if (!is.na(ret[i])) newret[i]<-ret[i]
               if (!is.na(object@abd_at_len[[marktypes[ii]]][i])) newret[i]<-newret[i] + object@abd_at_len[[marktypes[ii]]][i]*object@area
             }
-            
+
             ret <- newret
-            
+
           }
-      
+
         }
-      
+
       }
-      
+
       if (any(ret>0)) {
-        return(ret);  
+        return(ret);
       }
-      
+
     }
-    
+
     return(NULL);
-    
-    
+
+
   }
 )
 
@@ -489,18 +495,18 @@ setMethod(
   f = "getAbdAtAge",
   signature = "Stratum",
   definition = function(object,marktypes){
-    
+
     #if no marktype is supplied include all available
     if(missing(marktypes)){marktypes <- names(object@abd_at_age)}
-    
+
     if (is.null(marktypes)) return(NULL);
-    
+
     if (length(object@abd_at_age)==0) return(NULL);
-    
+
     #find first non-null mark type slot
     found <- FALSE
     i<-1
-    
+
     while (!found & i<=length(marktypes)) {
       if (!is.null(object@abd_at_age[[marktypes[[i]]]])){
         found<-TRUE
@@ -508,11 +514,11 @@ setMethod(
         i<-i+1
       }
     }
-    
+
     if (found) {
 
       ret <- object@abd_at_age[[marktypes[i]]]*object@area
-      
+
       #add other mark types
       if (length(marktypes)>i){
         for(ii in (i+1):length(marktypes)){
@@ -521,13 +527,13 @@ setMethod(
           }
         }
       }
-      
+
       if (any(ret>0)) {
-        return(ret);  
+        return(ret);
       }
 
     }
-    
+
     return(NULL);
   }
 )
@@ -545,37 +551,37 @@ setMethod(
 #   f = "getAbdAtMat",
 #   signature = "Stratum",
 #   definition = function(object,groups){
-#     
+#
 #     if (any(object@abd_at_mat>0)) {
-#       
+#
 #       #if groups are missing, return all data
 #       if(missing(groups)) return(object@abd_at_mat);
-#       
+#
 #       ret<-vector("numeric",length(groups));
 #       names(ret) <- names(groups);
-#       
+#
 #       for (i in seq(length(groups))){
 #         ret[i] <- 0;
 #         if (any(object@abd_at_mat[groups[[i]]]>0)) {
 #           ret[i] <- sum(object@abd_at_mat[groups[[i]]])
 #         }
 #       }
-#   
+#
 #       return(ret);
-# 
+#
 #     }
-# 
+#
 #     if(missing(groups)) return(0);
-# 
+#
 #     ret<-vector("numeric",length(groups));
 #     names(ret) <- names(groups);
-#     
+#
 #     for (i in seq(length(groups))){
 #       ret[i] <- 0;
 #     }
-#     
+#
 #     return(ret);
-#         
+#
 #   }
 # )
 
@@ -583,23 +589,23 @@ setMethod(
   f = "getAbdAtMat",
   signature = "Stratum",
   definition = function(object,marktypes,matgroups){
-    
+
     #return abundance at maturity for selected marktypes
     #if no marktypes provided, do all
     #if no matgroups provided return as is
     #otherwise matgroups is a list of maturities and their associated stages
-    
+
      #if there are no detections in this strata just return NULL
      if (!(any(unlist(object@abd_at_mat)>0))) {return(NULL)}
-     
+
      #aggregate the necessary mark types
      #if no marktype is supplied include all available
      if(missing(marktypes)){marktypes <- names(object@abd_at_mat)}
-     
+
      #find first non-null mark type slot
      found <- FALSE
      i<-1
-     
+
      while (!found & i<=length(marktypes)) {
       if (!is.null(object@abd_at_mat[[marktypes[[i]]]])){
         found<-TRUE
@@ -607,11 +613,11 @@ setMethod(
         i<-i+1
       }
     }
-    
+
     if (found) {
-    
+
       tmp <- object@abd_at_mat[[marktypes[i]]]*object@area
-      
+
       #add other mark types
       if (length(marktypes)>i){
         for(ii in (i+1):length(marktypes)){
@@ -620,29 +626,29 @@ setMethod(
           }
         }
       }
-      
+
       #now reorganise into maturity groups if they have been provided
-      
+
       if (missing(matgroups)) {
-        
+
         return(tmp);
-      
+
       } else {
-        
+
         ret <- vector("numeric",length(matgroups))
         names(ret) <- names(matgroups)
-        
+
         for (l in 1:length(matgroups)){
           ret[[l]]<-sum(tmp[matgroups[[l]]])
         }
 
         return(ret);
-        
+
       }
     }
-    
+
     return(NULL);
-    
+
   }
 )
 
@@ -652,7 +658,7 @@ setMethod(
 #   definition = function(object){
 #     ret<-c(object@code,object@abd_at_mat);
 #     names(ret)<-c("Stratum",names(object@abd_at_mat));
-#     return(ret);  
+#     return(ret);
 #   }
 # )
 
@@ -670,7 +676,7 @@ setMethod(
   f = "getMeanBiomass",
   signature = "Stratum",
   definition = function(object,marktype=NULL){
-    
+
     if (is.null(marktype)) {
       if (any(object@mean_biomass>0)){
         return(object@mean_biomass[object@mean_biomass>0]);
@@ -685,7 +691,7 @@ setMethod(
       }
     }
     return(0);
-    
+
   }
 )
 
@@ -694,7 +700,7 @@ setMethod(
 #   signature = "Stratum",
 #   definition = function(object,name){
 #     if (any(object@bio_at_len[[name]]>0)) {
-#       return(object@bio_at_len[[name]]);  
+#       return(object@bio_at_len[[name]]);
 #     }
 #     return(NULL);
 #   }
@@ -705,18 +711,18 @@ setMethod(
   f = "getBioAtLen",
   signature = "Stratum",
   definition = function(object,marktypes){
-    
+
     #if no marktype is supplied include all available
     if(missing(marktypes)){marktypes <- names(object@bio_at_len)}
-    
+
     if (is.null(marktypes)) return(NULL);
-    
+
     if (length(object@bio_at_len)==0) return(NULL);
-    
+
     #find first non-null mark type slot
     found <- FALSE
     i<-1
-    
+
     while (!found & i<=length(marktypes)) {
       if (!is.null(object@bio_at_len[[marktypes[[i]]]])){
         found<-TRUE
@@ -724,47 +730,47 @@ setMethod(
         i<-i+1
       }
     }
-    
+
     if (found) {
-      
+
       ret <- object@bio_at_len[[marktypes[i]]]*object@area
-      
+
       #add other mark types
       if (length(marktypes)>i){
         for(ii in (i+1):length(marktypes)){
-          
+
           if (!is.null(object@bio_at_len[[marktypes[ii]]])) {
-            
+
             #need to be careful if vectors are of different lengths
             #unique names (lengths)
             unames <- sort(unique(c(names(ret),names(object@bio_at_len[[marktypes[ii]]]))))
-            
+
             newret <- vector("numeric",length(unames))
             newret <- rep(0,length(unames))
             names(newret) <- unames
-            
+
             for (i in unames){
               if (!is.na(ret[i])) newret[i]<-ret[i]
               if (!is.na(object@bio_at_len[[marktypes[ii]]][i])) newret[i]<-newret[i] + object@bio_at_len[[marktypes[ii]]][i]*object@area
             }
-            
+
             ret <- newret
-            
+
           }
-          
+
         }
-        
+
       }
-      
+
       if (any(ret>0)) {
-        return(ret);  
+        return(ret);
       }
-      
+
     }
-    
+
     return(NULL);
-    
-    
+
+
   }
 )
 
@@ -788,7 +794,7 @@ setMethod(
 #   signature = "Stratum",
 #   definition = function(object){
 #     if (any(object@bio_at_age>0)) {
-#       return(object@bio_at_age);  
+#       return(object@bio_at_age);
 #     }
 #     return(NULL);
 #   }
@@ -798,18 +804,18 @@ setMethod(
   f = "getBioAtAge",
   signature = "Stratum",
   definition = function(object,marktypes){
-    
+
     #if no marktype is supplied include all available
     if(missing(marktypes)){marktypes <- names(object@bio_at_age)}
-    
+
     if (is.null(marktypes)) return(NULL);
-    
+
     if (length(object@bio_at_age)==0) return(NULL);
-    
+
     #find first non-null mark type slot
     found <- FALSE
     i<-1
-    
+
     while (!found & i<=length(marktypes)) {
       if (!is.null(object@bio_at_age[[marktypes[[i]]]])){
         found<-TRUE
@@ -817,11 +823,11 @@ setMethod(
         i<-i+1
       }
     }
-    
+
     if (found) {
-      
+
       ret <- object@bio_at_age[[marktypes[i]]]*object@area/1e3
-      
+
       #add other mark types
       if (length(marktypes)>i){
         for(ii in (i+1):length(marktypes)){
@@ -830,13 +836,13 @@ setMethod(
           }
         }
       }
-      
+
       if (any(ret>0)) {
-        return(ret);  
+        return(ret);
       }
-      
+
     }
-    
+
     return(NULL);
   }
 )
@@ -861,7 +867,7 @@ setMethod(
 #   signature = "Stratum",
 #   definition = function(object){
 #     if (any(object@bio_at_mat>0)) {
-#       return(object@bio_at_mat);  
+#       return(object@bio_at_mat);
 #     }
 #     return(NULL);
 #   }
@@ -871,23 +877,23 @@ setMethod(
   f = "getBioAtMat",
   signature = "Stratum",
   definition = function(object,marktypes,matgroups){
-    
+
     #return biomass at maturity for selected marktypes
     #if no marktypes provided, do all
     #if no matgroups provided return as is
     #otherwise matgroups is a list of maturities and their associated stages
-    
+
     #if there are no detections in this strata just return NULL
     if (!(any(unlist(object@bio_at_mat)>0))) return(NULL)
-    
+
     #aggregate the necessary mark types
     #if no marktype is supplied include all available
     if(missing(marktypes)){marktypes <- names(object@bio_at_mat)}
-    
+
     #find first non-null mark type slot
     found <- FALSE
     i<-1
-    
+
     while (!found & i<=length(marktypes)) {
       if (!is.null(object@bio_at_mat[[marktypes[[i]]]])){
         found<-TRUE
@@ -895,11 +901,11 @@ setMethod(
         i<-i+1
       }
     }
-    
+
     if (found) {
-      
+
       tmp <- object@bio_at_mat[[marktypes[i]]]*object@area/1e3
-      
+
       #add other mark types
       if (length(marktypes)>i){
         for(ii in (i+1):length(marktypes)){
@@ -908,29 +914,29 @@ setMethod(
           }
         }
       }
-      
+
       #now reorganise into maturity groups if they have been provided
-      
+
       if (missing(matgroups)) {
-        
+
         return(tmp);
-        
+
       } else {
-        
+
         ret <- vector("numeric",length(matgroups))
         names(ret) <- names(matgroups)
-        
+
         for (l in 1:length(matgroups)){
           ret[[l]]<-sum(tmp[matgroups[[l]]])
         }
-        
+
         return(ret);
-        
+
       }
     }
-    
+
     return(NULL);
-    
+
   }
 )
 
@@ -940,37 +946,37 @@ setMethod(
 #   f = "getBioAtMat",
 #   signature = "Stratum",
 #   definition = function(object,groups){
-#     
+#
 #     if (any(object@bio_at_mat>0)) {
-#       
+#
 #       #if groups are missing, return all data
 #       if(missing(groups)) return(object@bio_at_mat);
-#       
+#
 #       ret<-vector("numeric",length(groups));
 #       names(ret) <- names(groups);
-#       
+#
 #       for (i in seq(length(groups))){
 #         ret[i] <- 0;
 #         if (any(object@bio_at_mat[groups[[i]]]>0)) {
 #           ret[i] <- sum(object@bio_at_mat[groups[[i]]])
 #         }
 #       }
-#       
+#
 #       return(ret);
-#       
+#
 #     }
-#     
+#
 #     if(missing(groups)) return(0);
-#     
+#
 #     ret<-vector("numeric",length(groups));
 #     names(ret) <- names(groups);
-#     
+#
 #     for (i in seq(length(groups))){
 #       ret[i] <- 0;
 #     }
-#     
+#
 #     return(ret);
-#     
+#
 #   }
 # )
 
@@ -991,37 +997,37 @@ setMethod(
 #   signature = "Stratum",
 #   definition = function(object){
 #     if (any(object@mean_abundance>0)) {
-#       return(object@mean_abundance);  
-#     } 
+#       return(object@mean_abundance);
+#     }
 #     return(NULL);
-#   }  
+#   }
 # );
-# 
+#
 # setMethod(
 #   f = "biomass",
 #   signature = "Stratum",
 #   definition = function(object,LW){
-#     
+#
 #     #return biomass
-#     
+#
 #     if (any(object@mean_biomass>0)){
-#       return(object@mean_biomass);  
+#       return(object@mean_biomass);
 #     }
-#     
+#
 #     return(NULL);
-#     
+#
 #   }
-#   
+#
 # );
 
 setMethod(
   f = "getArea",
   signature = "Stratum",
   definition = function(object){
-  
+
     #return stratum area
     return(object@area);
-    
+
   }
 );
 
@@ -1040,10 +1046,10 @@ setMethod(
   f = "getICESarea",
   signature = "Stratum",
   definition = function(object){
-    
+
     #return ICES area
     return(object@ICESarea);
-    
+
   }
 );
 
@@ -1053,10 +1059,10 @@ setMethod(
   signature = "Stratum",
   definition = function(x,y,filename,transects="missing",ctds="missing",
                         hauls="missing",sa="missing",...){
-    
-    #tran - transects to include on the plot. Only those within 
+
+    #tran - transects to include on the plot. Only those within
     #the strata are included
-    
+
     #if a filename has been provided, open the device
     if(!missing(filename)) {
       png(filename=filename,width=960,height=960);
@@ -1067,25 +1073,25 @@ setMethod(
                 "S" = min(x@boundary_lat),
                 "E" = max(x@boundary_lon),
                 "W" = min(x@boundary_lon));
-    
+
     #cat("before",lmt$W,lmt$E,"\n")
-    
+
     #move the western and eastern boundaries out to the next half degree
     if (lmt$W<0) {lmt$W<-floor(lmt$W/0.5)*0.5} else {lmt$W<-ceiling(lmt$W/0.5)*0.5}
     if (lmt$E<0) {lmt$E<-ceiling(lmt$E/0.5)*0.5} else {lmt$E<-floor(lmt$E/0.5)*0.5}
-    
+
     #ensure plots are at least 1deg wide
     if (abs(abs(lmt$W)-abs(lmt$E))<1) {lmt$E <- lmt$W + 1}
-    
+
     #move the northern and southern boundaries out to the next half degree
     if (lmt$N<0) {lmt$N<-floor(lmt$N/0.5)*0.5} else {lmt$N<-ceiling(lmt$N/0.5)*0.5}
     if (lmt$S<0) {lmt$S<-ceiling(lmt$S/0.5)*0.5} else {lmt$S<-floor(lmt$S/0.5)*0.5}
-    
+
     #ensure plots are at least 0.5deg high
     if (abs(abs(lmt$N)-abs(lmt$S))<0.5) {lmt$N <- lmt$S + 1}
-    
+
     #cat("after",lmt$W,lmt$E,"\n")
-    
+
     plot(x@boundary_lon,
          x@boundary_lat,
          xlim=c(lmt$W,lmt$E),
@@ -1093,41 +1099,41 @@ setMethod(
          xlab="Longitude",
          ylab="Latitude",
          main=filename);
-    
+
     polygon(x@boundary_lon,x@boundary_lat);
-    
+
     #coastline
     #find out which coastline segments need to be printed
      toplot <- lapply(coast,function(x)(
        sum(x$Lat>=lmt$S & x$Lat<=lmt$N & x$Lon>=lmt$W & x$Lon<=lmt$E)>0)
      )
-     
+
      if (sum(unlist(toplot))>0) {
        for (i in which(toplot==TRUE)) {
          if (coast[[i]]$fill==TRUE) {
            polygon(coast[[i]]$Lon,coast[[i]]$Lat,col="green")
          } else {
-           polygon(coast[[i]]$Lon,coast[[i]]$Lat,col="white")             
+           polygon(coast[[i]]$Lon,coast[[i]]$Lat,col="white")
          }
        }
      }
-                    
+
     #start and end time limits
     t.earliest <- Sys.time()
     #subtract (approx) 100 years just to be sure
     t.latest <- Sys.time()-3e9
-    
+
     #transects
     if (!missing(transects)){
-      
+
       #select transects with the appropriate stratum code
       t<-which(unlist(lapply(transects,getStratumCode))==x@code);
-            
+
       for (i in seq_along(t)){
 
         t.earliest <- min(transects[[t[i]]]@start_time,t.earliest)
         t.latest <- max(transects[[t[i]]]@end_time,t.latest)
-        
+
         lines(
           x=c(transects[[t[i]]]@start_pos@lon,transects[[t[i]]]@end_pos@lon),
           y=c(transects[[t[i]]]@start_pos@lat,transects[[t[i]]]@end_pos@lat),
@@ -1138,26 +1144,26 @@ setMethod(
              labels = transects[[t[i]]]@code)
       }
     }
-    
+
     #vessel track
     if (exists("Track")){
-      
+
       #track fragments within plot limits
       toplot <- lapply(Track,function(x)(
         sum(x$Lat>=lmt$S & x$Lat<=lmt$N & x$Lon>=lmt$W & x$Lon<=lmt$E)>0)
       )
-      
+
       if (sum(unlist(toplot))>0) {
         for (i in which(toplot==TRUE)){
-          
+
           Track[[i]]$POSIX <- as.POSIXlt(strptime(paste(Track[[i]]$Date,Track[[i]]$Time),format="%d/%m/%Y %H:%M:%S"))
-          
+
           lines(Track[[i]]$Lon[Track[[i]]$POSIX>t.earliest & Track[[i]]$POSIX<t.latest],
                 Track[[i]]$Lat[Track[[i]]$POSIX>t.earliest & Track[[i]]$POSIX<t.latest],col="red");
         }
       }
     }
-    
+
     #SA
     if (!missing(sa)){
       if (!is.null(sa)) {
@@ -1166,14 +1172,14 @@ setMethod(
         }
       }
     }
-    
+
     #redo the strata bounds so as not to be hidden by coastline
     polygon(x@boundary_lon,x@boundary_lat,density=0);
     points(x@boundary_lon,x@boundary_lat)
-    
+
     dev.off();
-    
+
   }
-  
+
 );
 

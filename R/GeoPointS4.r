@@ -3,6 +3,14 @@
 #in decimal degrees.
 #Southern and Western hemispheres have a negative sign
 
+#' @include GenericS4.r
+#'
+#' An S4 class to represent a geographical point
+#'
+#' @slot lat A length-one numeric vector representing latitude
+#' @slot lon A length-one numeric vector representing longitude
+#'
+#'
 setClass(
   "GeoPoint",
   representation(lat = "numeric",lon = "numeric"),
