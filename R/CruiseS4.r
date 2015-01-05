@@ -352,9 +352,8 @@ setMethod(
 
         #summary plot as used in the report
 
-
         #Def & Prob Herring
-        sa1=sa[lapply(sa,getMarkType)=="Def Herring" | lapply(sa,getMarkType)=="Probably Herring"]
+        sa1=sa[toupper(lapply(sa,getMarkType))==toupper("Def Herring") | toupper(lapply(sa,getMarkType))==toupper("Probably Herring")]
 
         NASC <- unlist(lapply(sa1,getNASC))
         sa100<-sa1[NASC<=100]
@@ -380,7 +379,7 @@ setMethod(
         }
 
         #Herring in a mix
-        sa1=sa[lapply(sa,getMarkType)=="Herring in a mix"]
+        sa1=sa[toupper(lapply(sa,getMarkType))==toupper("Herring in a mix")]
 
         NASC <- unlist(lapply(sa1,getNASC))
         sa100<-sa1[NASC<=100]

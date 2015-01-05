@@ -260,25 +260,37 @@ setMethod(
 
       #at age/mat details
       #should be ok adding these lists as they will be of the same length (num/bio per age/mat)
-      abd_at_age <- object@abd_at_age[[1]]
-      bio_at_age <- object@bio_at_age[[1]]
-      abd_at_mat <- object@abd_at_mat[[1]]
-      bio_at_mat <- object@bio_at_mat[[1]]
+      if ((length(object@abd_at_age))>0) {
 
-      if (length(mark.names)>1) {
-        for (i in 2:length(mark.names)){
-          abd_at_age <- abd_at_age + object@abd_at_age[[i]]
-          bio_at_age <- bio_at_age + object@bio_at_age[[i]]
-          abd_at_mat <- abd_at_mat + object@abd_at_mat[[i]]
-          bio_at_mat <- bio_at_mat + object@bio_at_mat[[i]]
+        abd_at_age <- object@abd_at_age[[1]]
+        bio_at_age <- object@bio_at_age[[1]]
+        abd_at_mat <- object@abd_at_mat[[1]]
+        bio_at_mat <- object@bio_at_mat[[1]]
+
+        if (length(mark.names)>1) {
+          for (i in 2:length(mark.names)){
+            abd_at_age <- abd_at_age + object@abd_at_age[[i]]
+            bio_at_age <- bio_at_age + object@bio_at_age[[i]]
+            abd_at_mat <- abd_at_mat + object@abd_at_mat[[i]]
+            bio_at_mat <- bio_at_mat + object@bio_at_mat[[i]]
+          }
         }
-      }
 
-      #multiply by stratum area to get totals
-      abd_at_age <- object@area*abd_at_age
-      bio_at_age <- object@area*bio_at_age
-      abd_at_mat <- object@area*abd_at_mat
-      bio_at_mat <- object@area*bio_at_mat
+        #multiply by stratum area to get totals
+        abd_at_age <- object@area*abd_at_age
+        bio_at_age <- object@area*bio_at_age
+        abd_at_mat <- object@area*abd_at_mat
+        bio_at_mat <- object@area*bio_at_mat
+
+      } else {
+
+        #non aged species
+        abd_at_age <- NA
+        bio_at_age <- NA
+        abd_at_mat <- NA
+        bio_at_mat <- NA
+
+      }
     }
 
     #append total number of schools to report line (less number of possibles)
