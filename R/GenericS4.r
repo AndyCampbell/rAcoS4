@@ -47,7 +47,12 @@ setGeneric(name="setTime",def=function(object,value){standardGeneric("setTime")}
 #getCode
 #generic for retrieving the code of a cruise/stratum/transect
 setGeneric(name="getCode",def=function(object){standardGeneric("getCode")})
+setGeneric(name="getFAOCode",def=function(object){standardGeneric("getFAOCode")})
 setGeneric(name="getCruiseCode",def=function(object){standardGeneric("getCruiseCode")})
+
+#getCountryCode
+#generic for retrieving the country code of a cruise/stratum/transect
+setGeneric(name="getCountryCode",def=function(object){standardGeneric("getCountryCode")})
 
 #getStratumCode
 setGeneric(name="getStratumCode",def=function(object){standardGeneric("getStratumCode")})
@@ -69,7 +74,8 @@ setGeneric(name="getDesc",def=function(object){standardGeneric("getDesc")})
 
 #getVessel
 #generic to return vessel details
-setGeneric(name="getVessel",def=function(object){standardGeneric("getVessel")})
+setGeneric(name="getVesselName",def=function(object){standardGeneric("getVesselName")})
+setGeneric(name="getCallSign",def=function(object){standardGeneric("getCallSign")})
 
 #getStartDate, setStartDate, getEndDate, setEndDate, getStartPos, getEndPos
 #generic to get/set start and end dates, positions
@@ -79,6 +85,10 @@ setGeneric(name="getEndDate",def=function(object){standardGeneric("getEndDate")}
 setGeneric(name="setEndDate",def=function(object,value){standardGeneric("setEndDate")})
 setGeneric(name="getStartPos",def=function(object){standardGeneric("getStartPos")})
 setGeneric(name="getEndPos",def=function(object){standardGeneric("getEndPos")})
+setGeneric(name="getDuration",def=function(object){standardGeneric("getDuration")})
+setGeneric(name="getWireLength",def=function(object){standardGeneric("getWireLength")})
+setGeneric(name="getDepth",def=function(object){standardGeneric("getDepth")})
+setGeneric(name="getSpeed",def=function(object){standardGeneric("getSpeed")})
 
 #getTargetCommon
 #get common name for target species
@@ -86,6 +96,12 @@ setGeneric(name="getTargetCommon",def=function(object){standardGeneric("getTarge
 
 #getSpecies
 setGeneric(name="getSpecies",def=function(object){standardGeneric("getSpecies")})
+setGeneric(name="getLFSpecies",def=function(object){standardGeneric("getLFSpecies")})
+setGeneric(name="getBioSpecies",def=function(object){standardGeneric("getBioSpecies")})
+
+#Catch
+setGeneric(name="getCatchWeight",def=function(object,species){standardGeneric("getCatchWeight")})
+setGeneric(name="getSubSampleWeight",def=function(object,species){standardGeneric("getSubSampleWeight")})
 
 #Maturity Codes
 setGeneric(name="getMatureCodes",def=function(object){standardGeneric("getMatureCodes")})
@@ -109,6 +125,7 @@ setGeneric(name="setLF",def=function(object,value){standardGeneric("setLF")})
 setGeneric(name="setCS",def=function(object,Species,Target){standardGeneric("setCS")})
 setGeneric(name="getCS",def=function(object){standardGeneric("getCS")})
 setGeneric(name="getMarkType",def=function(object){standardGeneric("getMarkType")})
+setGeneric(name="getBio",def=function(object,species){standardGeneric("getBio")})
 
 #getTrackLength_nm
 #versions implemented for mark, transect, stratum, cruise
