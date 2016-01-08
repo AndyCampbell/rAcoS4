@@ -283,18 +283,18 @@ setMethod(
 
       #TO DO - sort out the offset below
       tsl <- ts_a*log10(as.numeric(names(object@LF[[Target]]))+0.25)+ts_b
-      csl<-10^(tsl/10)
-      csl<-csl*4*3.141593
+      csl <- 10^(tsl/10)
+      csl <- csl*4*3.141593
 
       #target proportions
-      ptar<-object@LF[[Target]]
+      ptar <- object@LF[[Target]]
 
       #normalise (should be anyway)
-      ptar<-ptar/sum(ptar)
+      ptar <- ptar/sum(ptar)
 
       #overall cross-section
       cs <- sum(ptar*csl)
-      object@CS<-cs
+      object@CS <- cs
 
     } else {
 
@@ -371,18 +371,22 @@ setMethod(
   f = "abundance",
   signature = "Mark",
   definition = function(object,target){
+
     #return the abundance at length for the mark
     #the 1 is for AREA - check this
     #return the abundance in millions
 
-    LF<-object@LF[[target]]
-    Area<-1
+    LF <- object@LF[[target]]
+    Area <- 1
 
     ret <- (object@NASC/object@CS*LF*Area)/1000/1000;
     #ret <- (object@NASC/object@CS*(object@LF/sum(object@LF))*1)/1000/1000;
+
     #add length offset
     names(ret) = as.character(as.numeric(names(LF)) + 0.25);
+
     return(ret);
+
   }
 );
 
@@ -434,11 +438,11 @@ setMethod(
     tdf <- data.frame("Code"=unlist(lapply(tran,getCode)),
                       "LenKm"=unlist(lapply(tran,getLengthKm)),
                       stringsAsFactors=FALSE)
-    tdf$DistStart <- ToKm(object@position@lat,
+    tdf$DistStart <- fTo_Km(object@position@lat,
                           object@position@lon,
                           unlist(lapply(lapply(tran,getStartPos),getLat)),
                           unlist(lapply(lapply(tran,getStartPos),getLon)))
-    tdf$DistEnd <- ToKm(object@position@lat,
+    tdf$DistEnd <- fTo_Km(object@position@lat,
                         object@position@lon,
                         unlist(lapply(lapply(tran,getEndPos),getLat)),
                         unlist(lapply(lapply(tran,getEndPos),getLon)))
@@ -469,4 +473,25 @@ setMethod(
     return(NULL)
   }
 )
+
+
+fTo_Km <- function(Pt1y,Pt1x,Pt2y,Pt2x){
+
+  #Pt=c(-Lat,Long)
+  # converts 2 -lat,longs into a km dist.
+  #  1.852 km/nmile
+  Pt1y<-as.double(Pt1y)
+  Pt1x<-as.double(Pt1x)
+  Pt2x<-as.double(Pt2x)
+  Pt2y<-as.double(Pt2y)
+  a1<-111.14-.28*(cos(-2*Pt1y*pi/180)+cos(-2*Pt2y*pi/180))
+  a0<-55.71*(cos(-Pt1y*pi/180)+cos(-Pt2y*pi/180))-.25*(cos(3*Pt1y*pi/180)+cos(3*Pt2y*pi/180))
+  dist<-(a1*(Pt2y-Pt1y))^2+(a0*(Pt2x-Pt1x))^2
+  #browser()
+  xxx<-dist>0 & !is.na(dist)
+  dist[xxx]<- dist[xxx]^0.5
+
+  #dist[dist>0]<- dist[dist>0]^0.5
+  return(dist)
+}
 

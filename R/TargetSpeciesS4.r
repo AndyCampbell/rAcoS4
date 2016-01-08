@@ -12,6 +12,7 @@ setClass(
   "TargetSpecies",
   representation(species = "character",
                  common_name = "character",
+                 AphiaID = "numeric",
                  LF_bin_size = "numeric",
                  ts_a = "numeric",
                  ts_b = "numeric",
@@ -25,6 +26,7 @@ setClass(
                  est_by_mat = "logical"),
   prototype(species = NA_character_,
             common_name = NA_character_,
+            AphiaID = NA_real_,
             LF_bin_size = NA_real_,
             ts_a = NA_real_,
             ts_b = NA_real_,
@@ -57,13 +59,14 @@ setClass(
 setMethod(
   f = "initialize",
   signature = "TargetSpecies",
-  definition = function(.Object,species,common_name,LF_bin_size=1,ts_a,ts_b=0,
+  definition = function(.Object,species,common_name,AphiaID,LF_bin_size=1,ts_a,ts_b=0,
                         ts_LFint=0,imm_codes,mat_codes,spt_codes,
                         LW,est_abd=FALSE,est_by_age=FALSE,est_by_mat=FALSE){
     #cat("~~~ TargetSpecies:initializer ~~~\n");
     #cat("imm_codes=",imm_codes,"\n")
     .Object@species <- species
     .Object@common_name <- common_name
+    .Object@AphiaID <- AphiaID
     .Object@LF_bin_size <- LF_bin_size
     .Object@ts_a <- ts_a
     .Object@ts_b <- ts_b
@@ -194,6 +197,64 @@ setMethod(
     return(object@common_name);
   }
 );
+
+#getCode
+setMethod(
+  f = "getCode",
+  signature = "TargetSpecies",
+  definition = function(object){
+    #cat("~~~ TargetSpecies:getCode ~~~\n");
+    return(object@AphiaID)
+  }
+)
+
+#getFAOCode
+setMethod(
+  f = "getFAOCode",
+  signature = "TargetSpecies",
+  definition = function(object){
+    #cat("~~~ TargetSpecies:getFAOCode ~~~\n");
+        if (toupper(object@species) == toupper("Scomber Scombrus")){
+          return("MAC")
+        } else if (toupper(object@species) == toupper("Ammodytes Tobianus")){
+          return("SAN")
+        } else if (toupper(object@species) == toupper("Squalus Acanthius")){
+          return("DGS")
+        } else if (toupper(object@species) == toupper("Melanogrammus Aeglefinus")){
+          return("HAD")
+        } else if (toupper(object@species) == toupper("Clupea Harengus")){
+          return("HER")
+        } else if (toupper(object@species) == toupper("Trachurus Trachurus")){
+          return("HOM")
+        } else if (toupper(object@species) == toupper("Micromesistius Poutassou")){
+          return("WHB")
+        } else if (toupper(object@species) == toupper("Lophius Piscatorius")){
+          return("MON")
+        } else if (toupper(object@species) == toupper("Eutrigla Gurnardus")){
+          return("GUG")
+        } else if (toupper(object@species) == toupper("Capros Aper")){
+          return("BOC")
+        } else if (toupper(object@species) == toupper("Trisopterus Esmarkii")){
+          return("NOP")
+        } else if (toupper(object@species) == toupper("Sprattus Sprattus")){
+          return("SPR")
+        } else if (toupper(object@species) == toupper("Merlangius merlangus")){
+          return("WHG")
+        } else if (toupper(object@species) == toupper("Sardina pilchardus")){
+          return("PIL")
+        } else if (toupper(object@species) == toupper("Mesopelagic SPP")){
+          return("XXX")
+        } else if (toupper(object@species) == toupper("Salmo Salar")){
+          return("SAL")
+        } else if (toupper(object@species) == toupper("Scyliorhinus canicula")){
+          return("SYC")
+        } else if (toupper(object@species) == toupper("Ammodytes Marinus")){
+          return("SAN")
+        } else {
+          return(paste("No FAO Code for",object@species,"Not Found - check TargetSpeciesS4.r"))
+        }
+  }
+)
 
 setMethod(
   f = "plot",

@@ -86,7 +86,7 @@ setMethod(
     .Object@end_time <- end_time
 
     #Ian Doonan's code (replace with VincentyEllipsoid call once testing is complete)
-    .Object@distance_km <- ToKm(start_pos@lat,start_pos@lon,end_pos@lat,end_pos@lon);
+    .Object@distance_km <- fTo_Km(start_pos@lat,start_pos@lon,end_pos@lat,end_pos@lon);
     #in nm
     .Object@distance_nm <- .Object@distance_km/1.852;
 
@@ -141,6 +141,26 @@ setMethod(
   }
 );
 
+#getStartDate
+setMethod(
+  f = "getStartDate",
+  signature = "Transect",
+  definition = function(object){
+    #cat("~~~ Transect:getStartDate ~~~\n");
+    return(object@start_time);
+  }
+);
+
+#getStartDate
+setMethod(
+  f = "getEndDate",
+  signature = "Transect",
+  definition = function(object){
+    #cat("~~~ Transect:getEndDate ~~~\n");
+    return(object@end_time);
+  }
+);
+
 #getEndPos
 setMethod(
   f = "getEndPos",
@@ -150,6 +170,7 @@ setMethod(
     return(object@end_pos);
   }
 );
+
 
 #getStratumCode (readonly)
 setMethod(
@@ -193,6 +214,33 @@ setMethod(
   }
 )
 
+# setMethod(
+#   f = "getAbdAtLen",
+#   signature = "Transect",
+#   definition = function(object,marktypes){
+#
+#     #if no marktype is supplied include all available
+#     if(missing(marktypes)){marktypes <- names(object@abd_at_len)}
+#
+#     if (is.null(marktypes)) return(NULL);
+#
+#     ret <- object@abd_at_len[[marktypes[1]]]
+#
+#     if (length(marktypes)>1){
+#       for(i in 2:length(marktypes)){
+#         ret <- ret + object@abd_at_len[[marktypes[i]]]
+#       }
+#     }
+#
+#     if (any(ret>0)) {
+#       return(ret);
+#     }
+#
+#     return(NULL);
+#   }
+# )
+
+
 setMethod(
   f = "getAbdAtLen",
   signature = "Transect",
@@ -203,27 +251,79 @@ setMethod(
 
     if (is.null(marktypes)) return(NULL);
 
-    ret <- object@abd_at_len[[marktypes[1]]]
+    if (length(object@abd_at_len)==0) return(NULL);
 
-    if (length(marktypes)>1){
-      for(i in 2:length(marktypes)){
-        ret <- ret + object@abd_at_len[[marktypes[i]]]
+    #find first non-null mark type slot
+    found <- FALSE
+    i <- 1
+
+    while (!found & i<=length(marktypes)){
+      if (!is.null(object@abd_at_len[[marktypes[[i]]]])){
+        found <- TRUE
+      } else {
+        i <- i + 1
       }
     }
 
-    if (any(ret>0)) {
-      return(ret);
+    if (found) {
+
+      ret <- object@abd_at_len[[marktypes[i]]]
+
+      #sort by length
+      if (any(!is.na(suppressWarnings(as.numeric(names(ret)))))) {
+        ret <- ret[as.character(sort(as.numeric(names(ret))))]
+      }
+
+      #add other mark types
+      if (length(marktypes) > i){
+
+        for (ii in (i+1):length(marktypes)){
+
+          if (!is.null(object@abd_at_len[[marktypes[ii]]])) {
+
+            unames <- unique(c(names(ret), names(object@abd_at_len[[marktypes[ii]]])))
+
+            if (any(!is.na(suppressWarnings(as.numeric(unames))))) {
+              unames <- as.character(sort(as.numeric(unames)))
+            }
+
+            newret <- vector("numeric", length(unames))
+            newret <- rep(0,length(unames))
+            names(newret) <- unames
+
+          for (l in unames){
+            if (!is.na(ret[l])) newret[l] <- ret[l]
+            if (!is.na(object@abd_at_len[[marktypes[ii]]][l])) {
+              newret[l] <- newret[l] + object@abd_at_len[[marktypes[ii]]][l]
+            }
+          }
+
+          ret <- newret
+
+        }
+
+      }
+
     }
 
-    return(NULL);
+    if (any(ret>0)) {
+      return(ret)
+    }
+
+  }
+
+  return(NULL)
+
   }
 )
+
 
 setMethod(
   f = "setAbdAtLen",
   signature = "Transect",
   definition = function(object,name,value){
-    object@abd_at_len[[name]]<-value;
+
+    object@abd_at_len[[name]] <- value;
     #fill the mean_abundance slot
     object@mean_abundance[name]<-sum(value);
     return(object);
@@ -360,6 +460,33 @@ setMethod(
 #   }
 # )
 
+# setMethod(
+#   f = "getBioAtLen",
+#   signature = "Transect",
+#   definition = function(object,marktypes){
+#
+#     #if no marktype is supplied include all available
+#     if(missing(marktypes)){marktypes <- names(object@bio_at_len)}
+#
+#     if (is.null(marktypes)) return(NULL);
+#
+#     ret <- object@bio_at_len[[marktypes[1]]]
+#
+#     if (length(marktypes)>1){
+#       for(i in 2:length(marktypes)){
+#         ret <- ret + object@bio_at_len[[marktypes[i]]]
+#       }
+#     }
+#
+#     if (any(ret>0)) {
+#       return(ret);
+#     }
+#
+#     return(NULL);
+#   }
+# )
+
+
 setMethod(
   f = "getBioAtLen",
   signature = "Transect",
@@ -370,19 +497,69 @@ setMethod(
 
     if (is.null(marktypes)) return(NULL);
 
-    ret <- object@bio_at_len[[marktypes[1]]]
+    if (length(object@bio_at_len)==0) return(NULL);
 
-    if (length(marktypes)>1){
-      for(i in 2:length(marktypes)){
-        ret <- ret + object@bio_at_len[[marktypes[i]]]
+    #find first non-null mark type slot
+    found <- FALSE
+    i <- 1
+
+    while (!found & i<=length(marktypes)){
+      if (!is.null(object@bio_at_len[[marktypes[[i]]]])){
+        found <- TRUE
+      } else {
+        i <- i + 1
       }
     }
 
-    if (any(ret>0)) {
-      return(ret);
+    if (found) {
+
+      ret <- object@bio_at_len[[marktypes[i]]]
+
+      #sort by length
+      if (any(!is.na(suppressWarnings(as.numeric(names(ret)))))) {
+        ret <- ret[as.character(sort(as.numeric(names(ret))))]
+      }
+
+      #add other mark types
+      if (length(marktypes) > i){
+
+        for (ii in (i+1):length(marktypes)){
+
+          if (!is.null(object@bio_at_len[[marktypes[ii]]])) {
+
+            unames <- unique(c(names(ret), names(object@bio_at_len[[marktypes[ii]]])))
+
+            if (any(!is.na(suppressWarnings(as.numeric(unames))))) {
+              unames <- as.character(sort(as.numeric(unames)))
+            }
+
+            newret <- vector("numeric", length(unames))
+            newret <- rep(0,length(unames))
+            names(newret) <- unames
+
+            for (l in unames){
+              if (!is.na(ret[l])) newret[l] <- ret[l]
+              if (!is.na(object@bio_at_len[[marktypes[ii]]][l])) {
+                newret[l] <- newret[l] + object@bio_at_len[[marktypes[ii]]][l]
+              }
+            }
+
+            ret <- newret
+
+          }
+
+        }
+
+      }
+
+      if (any(ret>0)) {
+        return(ret)
+      }
+
     }
 
-    return(NULL);
+    return(NULL)
+
   }
 )
 
@@ -527,3 +704,23 @@ setMethod(
   }
 );
 
+
+fTo_Km <- function(Pt1y,Pt1x,Pt2y,Pt2x){
+
+  #Pt=c(-Lat,Long)
+  # converts 2 -lat,longs into a km dist.
+  #  1.852 km/nmile
+  Pt1y<-as.double(Pt1y)
+  Pt1x<-as.double(Pt1x)
+  Pt2x<-as.double(Pt2x)
+  Pt2y<-as.double(Pt2y)
+  a1<-111.14-.28*(cos(-2*Pt1y*pi/180)+cos(-2*Pt2y*pi/180))
+  a0<-55.71*(cos(-Pt1y*pi/180)+cos(-Pt2y*pi/180))-.25*(cos(3*Pt1y*pi/180)+cos(3*Pt2y*pi/180))
+  dist<-(a1*(Pt2y-Pt1y))^2+(a0*(Pt2x-Pt1x))^2
+  #browser()
+  xxx<-dist>0 & !is.na(dist)
+  dist[xxx]<- dist[xxx]^0.5
+
+  #dist[dist>0]<- dist[dist>0]^0.5
+  return(dist)
+}

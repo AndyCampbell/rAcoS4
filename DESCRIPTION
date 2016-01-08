@@ -1,6 +1,6 @@
 Package: rAcoS4
 Title: Acoustic Survey Data Processing
-Version: 0.1
+Version: 0.3
 Authors@R: c(person("Andrew", "Campbell", role = c("aut", "cre"),
     email = "Andrew.Campbell@marine.ie"),
     person("Ian","Doonan",role="aut"))

@@ -57,7 +57,7 @@ setMethod(
   f = "getCode",
   signature = "CTDStation",
   definition = function(object){
-    cat("~~~ CTDStation:getCode ~~~\n");
+    #cat("~~~ CTDStation:getCode ~~~\n");
     return(object@code);
   }
 );

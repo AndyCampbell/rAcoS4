@@ -19,13 +19,13 @@ waypoint <- function(time=NA,lat=NA_real_,lon=NA_real_,heading=NA_real_,
       depth_unit=depth_unit,speed_unit=speed_unit)
 }
 
-cruise <- function(code,name=NA_character_,desc=NA_character_,
-                   vessel=NA_character_,start_date=NA,end_date=NA,
+cruise <- function(countrycode,code,name=NA_character_,desc=NA_character_,
+                   vesselname=NA_character_,callsign=NA_character_,start_date=NA,end_date=NA,
                    target_common=NA_character_,target_scientific=NA_character_){
 
   #cat("~~~ cruise:constructor ~~~\n");
-  new(Class="Cruise",code=code,name=name,desc=desc,vessel=vessel,
-      start_date=start_date,end_date=end_date,target_common=target_common,
+  new(Class="Cruise",countrycode = countrycode,code=code,name=name,desc=desc,vesselname=vesselname,
+      callsign=callsign,start_date=start_date,end_date=end_date,target_common=target_common,
       target_scientific=target_scientific)
 }
 
@@ -37,9 +37,11 @@ ctdstation <- function(lat,lon,code,cruise_code,
       time=time,depth=depth,depth_unit=depth_unit)
 }
 
-haul <- function(code,cruise_code,valid=TRUE,shoot_wp=NULL,haul_wp=NULL,species=NULL){
+haul <- function(code,cruise_code,valid=TRUE,wirelength=NA_real_,towspeed=NA_real_,
+                 trawldepth=NA_real_,shoot_wp=NULL,haul_wp=NULL,species=NULL){
   #cat("~~~ Haul:constructor ~~~\n");
   new(Class="Haul",code=code,cruise_code=cruise_code,valid=valid,
+      wirelength=wirelength, towspeed = towspeed, trawldepth = trawldepth,
       shoot_wp=shoot_wp,haul_wp=haul_wp,species=species)
 }
 
@@ -65,11 +67,11 @@ marktype <- function(name,cruise_code,NASC_name,species,include,haul_assignment,
       mixed_with = mixed_with,hauls = hauls)
 }
 
-targetspecies <- function(species,common_name,LF_bin_size,ts_a,ts_b,ts_LFint,imm_codes=NA_real_,
+targetspecies <- function(species,common_name,AphiaID,LF_bin_size,ts_a,ts_b,ts_LFint,imm_codes=NA_real_,
                           mat_codes=NA_real_,spt_codes=NA_real_,est_abd=FALSE,est_by_age=FALSE,
                           est_by_mat=FALSE){
   #cat("~~~ TargetSpecies:constructor ~~~\n");
-  new(Class = "TargetSpecies",species = species,common_name = common_name,
+  new(Class = "TargetSpecies",species = species,common_name = common_name,AphiaID = AphiaID,
              LF_bin_size = LF_bin_size,ts_a = ts_a,ts_b = ts_b,ts_LFint = ts_LFint,
              imm_codes = imm_codes,mat_codes = mat_codes,spt_codes = spt_codes,
              est_abd = est_abd,est_by_age = est_by_age,est_by_mat = est_by_mat)

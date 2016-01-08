@@ -8,19 +8,23 @@
 #'
 setClass(
   "Cruise",
-  representation(code = "character",
+  representation(countrycode = "character",
+                 code = "character",
                  name = "character",
                  desc = "character",
-                 vessel = "character",
+                 vesselname = "character",
+                 callsign = "character",
                  start_date = "POSIXlt",
                  end_date = "POSIXlt",
                  target_common = "character",
                  target_scientific = "character"),
 
-  prototype(code = NA_character_,
+  prototype(countrycode = NA_character_,
+            code = NA_character_,
             name = NA_character_,
             desc = NA_character_,
-            vessel = NA_character_,
+            vesselname = NA_character_,
+            callsign = NA_character_,
             start_date = NA,
             end_date = NA,
             target_common = NA_character_,
@@ -28,9 +32,15 @@ setClass(
 
   validity=function(object){
 
-    #cat("~~~ Cruise:inspector ~~~\n");
+    cat("~~~ Cruise:inspector ~~~\n");
 
     errors <- character()
+
+    #country code is mandatory
+    if (nchar(object@countrycode)==0){
+      msg <- "[Cruise: validation] a country code is mandatory"
+      errors <- c(errors,msg)
+    }
 
     #code is mandatory
     if (nchar(object@code)==0){
@@ -38,8 +48,21 @@ setClass(
       errors <- c(errors,msg)
     }
 
+    #cruise name is mandatory
     if (nchar(object@name)==0){
       msg <- "[Cruise: validation] a cruise name is mandatory"
+      errors <- c(errors,msg)
+    }
+
+    #vesselname is mandatory
+    if (nchar(object@vesselname)==0){
+      msg <- "[Cruise: validation] a vesselname is mandatory"
+      errors <- c(errors,msg)
+    }
+
+    #callsign is mandatory
+    if (nchar(object@callsign)==0){
+      msg <- "[Cruise: validation] a callsign is mandatory"
       errors <- c(errors,msg)
     }
 
@@ -70,13 +93,15 @@ setClass(
 setMethod(
   f = "initialize",
   signature = "Cruise",
-  definition = function(.Object,code,name,desc,vessel,start_date,end_date,
-                        target_common,target_scientific){
+  definition = function(.Object,countrycode,code,name,desc,vesselname,callsign,
+                        start_date,end_date,target_common,target_scientific){
     #cat("~~~ Cruise:initializer ~~~\n");
+    .Object@countrycode <- countrycode
     .Object@code <- code
     .Object@name <- name
     .Object@desc <- desc
-    .Object@vessel <- vessel
+    .Object@vesselname <- vesselname
+    .Object@callsign <- callsign
     .Object@start_date <- start_date
     .Object@end_date <- end_date
     .Object@target_common <- target_common
@@ -88,6 +113,15 @@ setMethod(
 );
 
 #accessor methods
+setMethod(
+  f = "getCountryCode",
+  signature = "Cruise",
+  definition = function(object){
+    #cat("~~~ Cruise:getCountryCode ~~~\n");
+    return(object@countrycode);
+  }
+);
+
 setMethod(
   f = "getCode",
   signature = "Cruise",
@@ -145,11 +179,11 @@ setMethod(
 # );
 
 setMethod(
-  f = "getVessel",
+  f = "getVesselName",
   signature = "Cruise",
   definition = function(object){
-    #cat("~~~ Cruise:getVessel ~~~\n");
-    return(object@vessel);
+    #cat("~~~ Cruise:getVesselName ~~~\n");
+    return(object@vesselname);
   }
 );
 
@@ -162,6 +196,15 @@ setMethod(
 #     return(object);
 #   }
 # );
+
+setMethod(
+  f = "getCallSign",
+  signature = "Cruise",
+  definition = function(object){
+    #cat("~~~ Cruise:getCallSign ~~~\n");
+    return(object@callsign);
+  }
+);
 
 setMethod(
   f = "getStartDate",
@@ -232,10 +275,17 @@ setMethod(
 setMethod(
   f = "plot",
   signature = "Cruise",
-  definition = function(x,y,filename,strata="missing",transects="missing",
-                        ctds="missing",hauls="missing",sa="missing",track="missing",
-                        srboundaries=FALSE,bathycontours="missing",sasummary=FALSE,
-                        leg.pos="bottomright",printBio=FALSE,...){
+  definition = function(x, y, filename, strata = "missing", transects = "missing",
+                        ctds = "missing", hauls = "missing", sa = "missing", track = "missing",
+                        srboundaries = FALSE, bathycontours = "missing", sasummary = FALSE,
+                        leg.pos = "bottomright", printBio = FALSE, Nlim = "missing",
+                        Slim = "missing", Wlim = "missing", Elim = "missing", ...){
+
+    LonLookup <- c("D8"="-11.5", "D9"="-10.5", "E0"="-9.5", "E1"="-8.5", "E2"="-7.5", "E3"="-6.5",
+                   "E4"="-5.5", "E5"="-4.5")
+    LatLookup <- c("36"="53.75", "37"="54.25", "38"="54.75", "39"="55.25", "40"="55.75", "41"="56.25",
+                   "42"="56.75", "43"="57.25", "44"="57.75", "45"="58.25", "46"="58.75", "47"="59.25",
+                   "48"="59.75", "49"="60.25")
 
     #printBio - if set, output the results to each strata
 
@@ -246,20 +296,20 @@ setMethod(
     }
 
     #boundary limits
-    lmt <- list("N" = getNorthernLimit(x),
-                "S" = getSouthernLimit(x),
-                "E" = getEasternLimit(x),
-                "W" = getWesternLimit(x));
+    lmt <- list("N" = {if (!missing(Nlim)){Nlim} else {getNorthernLimit(x)}},
+                "S" = {if (!missing(Slim)){Slim} else {getSouthernLimit(x)}},
+                "E" = {if (!missing(Elim)){Elim} else {getEasternLimit(x)}},
+                "W" = {if (!missing(Wlim)){Wlim} else {getWesternLimit(x)}})
 
     #create an empty plot
-    plot(0,0,
-         xlim=c(lmt$W,lmt$E),
-         ylim=c(lmt$S,lmt$N),
-         type="n",
-         xlab="Longitude",
-         ylab="Latitude",
-         axes=FALSE,
-         cex.lab=1.5);
+    plot(0, 0,
+         xlim = c(lmt$W,lmt$E),
+         ylim = c(lmt$S,lmt$N),
+         type = "n",
+         xlab = "Longitude",
+         ylab = "Latitude",
+         axes = FALSE,
+         cex.lab = 1.5)
 
     if (srboundaries) {
       abline(v=seq(-50,50),lty=1,col='grey')
@@ -467,51 +517,11 @@ setMethod(
 
       for (i in 1:length(t)){
 
-        SRy<-substring(t[[i]]$stratum,1,2)
-        SRx<-substring(t[[i]]$stratum,3,4)
+        SRy<-substring(t[[i]]$stratum,3,4)
+        SRx<-substring(t[[i]]$stratum,5,6)
 
-        if (SRx=="D8") {
-          Lon <- -11.5
-        } else if (SRx=="D9") {
-          Lon <- -10.5
-        } else if (SRx=="E0") {
-          Lon <- -9.5
-        } else if (SRx=="E1") {
-          Lon <- -8.5
-        } else if (SRx=="E2") {
-          Lon <- -7.5
-        } else if (SRx=="E3") {
-          Lon <- -6.5
-        } else if (SRx=="E4") {
-          Lon <- -5.5
-        } else {
-          Lon <- 99
-        }
-
-
-        if (SRy=="36"){
-          Lat <- 53.75
-        } else if (SRy=="37") {
-          Lat <- 54.25
-        } else if (SRy=="38") {
-          Lat <- 54.75
-        } else if (SRy=="39") {
-          Lat <- 55.25
-        } else if (SRy=="40") {
-          Lat <- 55.75
-        } else if (SRy=="41") {
-          Lat <- 56.25
-        } else if (SRy=="42") {
-          Lat <- 56.75
-        } else if (SRy=="43") {
-          Lat <- 57.25
-        } else if (SRy=="44") {
-          Lat <- 57.75
-        } else if (SRy=="45") {
-          Lat <- 58.25
-        } else {
-          Lat <- 99
-        }
+        Lat <- as.numeric(LatLookup[SRy])
+        Lon <- as.numeric(LonLookup[SRx])
 
         text(Lon,Lat+0.1,paste(round(sum(t[[i]]$ssb)),"kt",sep=""),cex=1.5)
         text(Lon,Lat-0.1,paste(round(sum(t[[i]]$abd),1),"x10^6",sep=""),cex=1.5)

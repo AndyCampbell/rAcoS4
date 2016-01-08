@@ -209,7 +209,7 @@ setMethod(
     repLine <- stratumCode
 
     #contains transects
-    tr<-Transects[lapply(Transects,getStratumCode)==object@code]
+    tr <- Transects[lapply(Transects,getStratumCode)==object@code]
 
     #number of marks and their types on each transect
     tr.marks <- lapply(tr,getNumMarks)
@@ -230,8 +230,9 @@ setMethod(
     repLine <- paste(repLine,length(tr),sep=",")
 
     #find total marks by type
-    mark.names<-c()
-    for (i in 1:length(tr)){mark.names<-unique(c(mark.names,names(tr[[i]]@marks[nchar(names(tr[[i]]@marks))>0])))}
+    mark.names <- c()
+
+    for (i in 1:length(tr)){mark.names <- unique(c(mark.names,names(tr[[i]]@marks[nchar(names(tr[[i]]@marks))>0])))}
 
     if (length(mark.names)>0) {
 
@@ -258,39 +259,57 @@ setMethod(
 
       marktotals<-totals
 
-      #at age/mat details
-      #should be ok adding these lists as they will be of the same length (num/bio per age/mat)
+      #at age details
       if ((length(object@abd_at_age))>0) {
 
         abd_at_age <- object@abd_at_age[[1]]
         bio_at_age <- object@bio_at_age[[1]]
-        abd_at_mat <- object@abd_at_mat[[1]]
-        bio_at_mat <- object@bio_at_mat[[1]]
 
         if (length(mark.names)>1) {
           for (i in 2:length(mark.names)){
             abd_at_age <- abd_at_age + object@abd_at_age[[i]]
             bio_at_age <- bio_at_age + object@bio_at_age[[i]]
-            abd_at_mat <- abd_at_mat + object@abd_at_mat[[i]]
-            bio_at_mat <- bio_at_mat + object@bio_at_mat[[i]]
           }
         }
 
         #multiply by stratum area to get totals
         abd_at_age <- object@area*abd_at_age
         bio_at_age <- object@area*bio_at_age
-        abd_at_mat <- object@area*abd_at_mat
-        bio_at_mat <- object@area*bio_at_mat
 
       } else {
 
         #non aged species
         abd_at_age <- NA
         bio_at_age <- NA
+
+      }
+
+      #at mat details
+      if ((length(object@abd_at_mat))>0) {
+
+        abd_at_mat <- object@abd_at_mat[[1]]
+        bio_at_mat <- object@bio_at_mat[[1]]
+
+        if (length(mark.names)>1) {
+          for (i in 2:length(mark.names)){
+            abd_at_mat <- abd_at_mat + object@abd_at_mat[[i]]
+            bio_at_mat <- bio_at_mat + object@bio_at_mat[[i]]
+          }
+        }
+
+        #multiply by stratum area to get totals
+        abd_at_mat <- object@area*abd_at_mat
+        bio_at_mat <- object@area*bio_at_mat
+
+      } else {
+
         abd_at_mat <- NA
         bio_at_mat <- NA
 
       }
+
+
+
     }
 
     #append total number of schools to report line (less number of possibles)
@@ -456,21 +475,29 @@ setMethod(
 
       #add other mark types
       if (length(marktypes)>i){
+
         for(ii in (i+1):length(marktypes)){
 
           if (!is.null(object@abd_at_len[[marktypes[ii]]])) {
 
             #need to be careful if vectors are of different lengths
             #unique names (lengths)
-            unames <- sort(unique(c(names(ret),names(object@abd_at_len[[marktypes[ii]]]))))
+            unames <- unique(c(names(ret),names(object@abd_at_len[[marktypes[ii]]])))
+
+            #check if all the names are numeric and if so, sort them
+            if (any(!is.na(suppressWarnings(as.numeric(unames))))) {
+              unames <- as.character(sort(as.numeric(unames)))
+            }
 
             newret <- vector("numeric",length(unames))
             newret <- rep(0,length(unames))
             names(newret) <- unames
 
-            for (i in unames){
-              if (!is.na(ret[i])) newret[i]<-ret[i]
-              if (!is.na(object@abd_at_len[[marktypes[ii]]][i])) newret[i]<-newret[i] + object@abd_at_len[[marktypes[ii]]][i]*object@area
+            for (l in unames){
+              if (!is.na(ret[l])) newret[l]<-ret[l]
+              if (!is.na(object@abd_at_len[[marktypes[ii]]][l])) {
+                newret[l]<-newret[l] + object@abd_at_len[[marktypes[ii]]][l]*object@area
+              }
             }
 
             ret <- newret
@@ -755,15 +782,22 @@ setMethod(
 
             #need to be careful if vectors are of different lengths
             #unique names (lengths)
-            unames <- sort(unique(c(names(ret),names(object@bio_at_len[[marktypes[ii]]]))))
+            unames <- unique(c(names(ret),names(object@bio_at_len[[marktypes[ii]]])))
+
+            #check if all the names are numeric and if so, sort them
+            if (any(!is.na(suppressWarnings(as.numeric(unames))))) {
+              unames <- as.character(sort(as.numeric(unames)))
+            }
 
             newret <- vector("numeric",length(unames))
             newret <- rep(0,length(unames))
             names(newret) <- unames
 
-            for (i in unames){
-              if (!is.na(ret[i])) newret[i]<-ret[i]
-              if (!is.na(object@bio_at_len[[marktypes[ii]]][i])) newret[i]<-newret[i] + object@bio_at_len[[marktypes[ii]]][i]*object@area
+            for (l in unames){
+              if (!is.na(ret[l])) newret[l] <- ret[l]
+              if (!is.na(object@bio_at_len[[marktypes[ii]]][l])) {
+                newret[l]<-newret[l] + object@bio_at_len[[marktypes[ii]]][l]*object@area
+              }
             }
 
             ret <- newret
@@ -1139,7 +1173,7 @@ setMethod(
     if (!missing(transects)){
 
       #select transects with the appropriate stratum code
-      t<-which(unlist(lapply(transects,getStratumCode))==x@code);
+      t <- which(unlist(lapply(transects,getStratumCode))==x@code);
 
       for (i in seq_along(t)){
 
@@ -1147,12 +1181,13 @@ setMethod(
         t.latest <- max(transects[[t[i]]]@end_time,t.latest)
 
         lines(
-          x=c(transects[[t[i]]]@start_pos@lon,transects[[t[i]]]@end_pos@lon),
-          y=c(transects[[t[i]]]@start_pos@lat,transects[[t[i]]]@end_pos@lat),
-          lwd=4,
-          col="grey")
-        text(x=(transects[[t[i]]]@start_pos@lon + transects[[t[i]]]@end_pos@lon)/2,
-             y=((transects[[t[i]]]@start_pos@lat + transects[[t[i]]]@end_pos@lat)/2)+0.025,
+          x = c(transects[[t[i]]]@start_pos@lon,transects[[t[i]]]@end_pos@lon),
+          y = c(transects[[t[i]]]@start_pos@lat,transects[[t[i]]]@end_pos@lat),
+          lwd = 4,
+          col = "grey")
+
+        text(x = (transects[[t[i]]]@start_pos@lon + transects[[t[i]]]@end_pos@lon)/2,
+             y = ((transects[[t[i]]]@start_pos@lat + transects[[t[i]]]@end_pos@lat)/2)+0.025,
              labels = transects[[t[i]]]@code)
       }
     }
@@ -1162,16 +1197,22 @@ setMethod(
 
       #track fragments within plot limits
       toplot <- lapply(Track,function(x)(
-        sum(x$Lat>=lmt$S & x$Lat<=lmt$N & x$Lon>=lmt$W & x$Lon<=lmt$E)>0)
+        sum(x$Lat >= lmt$S & x$Lat <= lmt$N & x$Lon >= lmt$W & x$Lon <= lmt$E) > 0)
       )
 
       if (sum(unlist(toplot))>0) {
+
         for (i in which(toplot==TRUE)){
 
           Track[[i]]$POSIX <- as.POSIXlt(strptime(paste(Track[[i]]$Date,Track[[i]]$Time),format="%d/%m/%Y %H:%M:%S"))
 
-          lines(Track[[i]]$Lon[Track[[i]]$POSIX>t.earliest & Track[[i]]$POSIX<t.latest],
-                Track[[i]]$Lat[Track[[i]]$POSIX>t.earliest & Track[[i]]$POSIX<t.latest],col="red");
+          #cat(sum(Track[[i]]$POSIX>t.earliest & Track[[i]]$POSIX<t.latest),"\n")
+
+          #lines(Track[[i]]$Lon[Track[[i]]$POSIX>t.earliest & Track[[i]]$POSIX<t.latest],
+          #      Track[[i]]$Lat[Track[[i]]$POSIX>t.earliest & Track[[i]]$POSIX<t.latest],col="red")
+          lines(Track[[i]]$Lon,Track[[i]]$Lat,col="red")
+
+
         }
       }
     }
