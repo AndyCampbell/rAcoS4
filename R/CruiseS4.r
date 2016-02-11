@@ -32,7 +32,7 @@ setClass(
 
   validity=function(object){
 
-    cat("~~~ Cruise:inspector ~~~\n");
+    #cat("~~~ Cruise:inspector ~~~\n");
 
     errors <- character()
 

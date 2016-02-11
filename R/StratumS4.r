@@ -1104,7 +1104,7 @@ setMethod(
   f = "plot",
   signature = "Stratum",
   definition = function(x,y,filename,transects="missing",ctds="missing",
-                        hauls="missing",sa="missing",...){
+                        hauls="missing",sa="missing",xlim="missing",ylim="missing",...){
 
     #tran - transects to include on the plot. Only those within
     #the strata are included
@@ -1135,6 +1135,17 @@ setMethod(
 
     #ensure plots are at least 0.5deg high
     if (abs(abs(lmt$N)-abs(lmt$S))<0.5) {lmt$N <- lmt$S + 1}
+
+    #overide calculated boundaries if xlim,ylim is specified
+    if(!missing(xlim)) {
+        lmt$W <- xlim[1]
+        lmt$E <- xlim[2]
+    }
+    if(!missing(ylim)) {
+      lmt$S <- ylim[1]
+      lmt$N <- ylim[2]
+    }
+
 
     #cat("after",lmt$W,lmt$E,"\n")
 

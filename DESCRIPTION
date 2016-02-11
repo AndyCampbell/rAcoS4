@@ -1,6 +1,6 @@
 Package: rAcoS4
 Title: Acoustic Survey Data Processing
-Version: 0.3
+Version: 0.4
 Authors@R: c(person("Andrew", "Campbell", role = c("aut", "cre"),
     email = "Andrew.Campbell@marine.ie"),
     person("Ian","Doonan",role="aut"))
@@ -24,3 +24,4 @@ Collate:
     'StratumS4.r'
     'TargetSpeciesS4.r'
     'TransectS4.r'
+RoxygenNote: 5.0.1
